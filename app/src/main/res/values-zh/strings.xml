@@ -5,7 +5,7 @@
     <string name="apply">应用</string>
     <string name="back">返回</string>
     <string name="camera_permission_denied">相机权限被拒绝</string>
-    <string name="camera_permission_rationale">应用请求相机权限访问扫描文档。捕获的图像仅存储在此设备上，并且在关闭当前文档时将被删除。</string>
+    <string name="camera_permission_rationale">应用请求相机权限访问扫描文档。捕获的图像仅存储在此设备上，并且在关闭当前扫描时将被删除。</string>
     <string name="cancel">取消</string>
     <string name="change_directory">更改目录</string>
     <string name="clear_text">清除文字</string>

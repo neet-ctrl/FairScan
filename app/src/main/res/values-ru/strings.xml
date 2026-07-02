@@ -5,7 +5,7 @@
     <string name="apply">Применить</string>
     <string name="back">Назад</string>
     <string name="camera_permission_denied">В доступе к камере отказано</string>
-    <string name="camera_permission_rationale">Для сканирования документов приложению требуется доступ к камере. Отснятые изображения хранятся только на данном устройстве и удаляются по окончании работы с текущим документом.</string>
+    <string name="camera_permission_rationale">Для сканирования документов приложению требуется доступ к камере. Отснятые изображения хранятся только на данном устройстве и удаляются по окончании текущего сканирования.</string>
     <string name="cancel">Отмена</string>
     <string name="change_directory">Изменить папку</string>
     <string name="clear_text">Стереть текст</string>

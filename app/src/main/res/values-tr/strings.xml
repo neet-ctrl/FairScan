@@ -5,7 +5,7 @@
     <string name="apply">Uygula</string>
     <string name="back">Geri</string>
     <string name="camera_permission_denied">Kamera izni reddedildi</string>
-    <string name="camera_permission_rationale">Uygulama, belgeleri taramak için kamera erişimi gerektirir. Yakalanan görüntüler yalnızca bu cihazda saklanır ve mevcut belgeyi kapattığınızda silinir.</string>
+    <string name="camera_permission_rationale">Uygulama, belgeleri taramak için kamera erişimi gerektirir. Yakalanan görüntüler yalnızca bu cihazda saklanır ve geçerli taramayı kapattığınızda silinir.</string>
     <string name="cancel">İptal</string>
     <string name="change_directory">Dizini değiştir</string>
     <string name="clear_text">Metni temizle</string>

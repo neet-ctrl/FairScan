@@ -5,7 +5,7 @@
     <string name="apply">Použít</string>
     <string name="back">Zpět</string>
     <string name="camera_permission_denied">Byl odepřen přístup k fotoaparátu</string>
-    <string name="camera_permission_rationale">Aby bylo možné skenovat dokumenty, tato aplikace potřebuje přístup k fotoaparátu. Nasnímané obrázky jsou ukládány pouze do tohoto zařízení a budou smazány, když zavřete stávající dokument.</string>
+    <string name="camera_permission_rationale">Aby bylo možné skenovat dokumenty, tato aplikace potřebuje přístup k fotoaparátu. Nasnímané obrázky jsou ukládány pouze do tohoto zařízení a budou smazány, když ukončíte aktuální sken.</string>
     <string name="cancel">Zrušit</string>
     <string name="change_directory">Změnit složku</string>
     <string name="clear_text">Smazat text</string>

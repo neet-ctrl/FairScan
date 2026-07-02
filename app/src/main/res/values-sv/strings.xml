@@ -5,7 +5,7 @@
     <string name="apply">Använd</string>
     <string name="back">Tillbaka</string>
     <string name="camera_permission_denied">Kamerabehörighet nekades</string>
-    <string name="camera_permission_rationale">Appen behöver åtkomst till kameran för att kunna skanna dokument. Tagna bilder lagras endast på den här enheten och raderas när du stänger det aktuella dokumentet.</string>
+    <string name="camera_permission_rationale">Appen behöver åtkomst till kameran för att kunna skanna dokument. Tagna bilder lagras endast på den här enheten och raderas när du stänger den aktuella skanningen.</string>
     <string name="cancel">Avbryt</string>
     <string name="change_directory">Byt mapp</string>
     <string name="clear_text">Rensa text</string>

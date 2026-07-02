@@ -5,7 +5,7 @@
     <string name="apply">Aplicar</string>
     <string name="back">Atrás</string>
     <string name="camera_permission_denied">Permiso de cámara denegado</string>
-    <string name="camera_permission_rationale">La aplicación necesita acceso a la cámara para escanear documentos. Las imágenes capturadas se guardan solo en este dispositivo y se eliminarán cuando cierres el documento actual.</string>
+    <string name="camera_permission_rationale">La aplicación necesita acceso a la cámara para escanear documentos. Las imágenes capturadas se guardan solo en este dispositivo y se eliminarán cuando cierres el escaneo actual.</string>
     <string name="cancel">Cancelar</string>
     <string name="change_directory">Cambiar carpeta</string>
     <string name="clear_text">Borrar texto</string>
