@@ -5,7 +5,7 @@
     <string name="apply">適用</string>
     <string name="back">戻る</string>
     <string name="camera_permission_denied">カメラの権限が拒否されました</string>
-    <string name="camera_permission_rationale">ドキュメントをスキャンするためにカメラへのアクセスが必要です。撮影した画像はこのデバイスにのみ保存され、現在のドキュメントを閉じると削除されます。</string>
+    <string name="camera_permission_rationale">ドキュメントをスキャンするためにカメラへのアクセスが必要です。撮影した画像はこのデバイスにのみ保存され、現在のスキャンを閉じると削除されます。</string>
     <string name="cancel">キャンセル</string>
     <string name="change_directory">フォルダを変更</string>
     <string name="clear_text">テキストを消去</string>
