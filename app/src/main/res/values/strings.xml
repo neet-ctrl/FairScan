@@ -1,113 +1,201 @@
 <resources>
+    <!-- About screen: title. It's also an item of the ⋮ menu -->
     <string name="about">About</string>
+    <!-- Button in the Document screen -->
     <string name="add_page">Add page</string>
+    <!-- Header in the About screen -->
     <string name="app_name" translatable="false">FairScan</string>
-    <!-- 
+    <!--
+    Appears in the About screen.
     "Simple" means easy to use, with no unnecessary complexity. You can scan a document and get a PDF in just a few seconds.
     "Respectful" is not only about privacy, but also: no ads, no tracking, no artificial limitations (e.g. watermark), minimal permissions...
     Please preserve the broad meaning of "respectful". It is a key part of FairScan's philosophy and should not be translated as "privacy-friendly" only.
     -->
     <string name="app_tagline">A simple and respectful application to scan your documents.</string>
+    <!-- Button in the Crop screen -->
     <string name="apply">Apply</string>
+    <!-- Icon description for ← at the top-left -->
     <string name="back">Back</string>
+    <!-- Error message (as a toast) -->
     <string name="camera_permission_denied">Camera permission was denied</string>
+    <!-- Appears on the Camera screen -->
     <string name="camera_permission_rationale">The app requires camera access to scan documents. Captured images are stored only on this device and will be deleted when you close the current scan.</string>
+    <!-- Button in dialogs -->
     <string name="cancel">Cancel</string>
+    <!-- Icon description 🗁 -->
     <string name="change_directory">Change folder</string>
+    <!-- Icon description ✖ in the filename field of the Export screen -->
     <string name="clear_text">Clear text</string>
+    <!-- Button in OCR download dialog -->
     <string name="close">Close</string>
+    <!-- Icon description in the Document screen -->
     <string name="color_mode">Filter</string>
+    <!-- Settings screen -->
     <string name="color_mode_auto">Automatic</string>
+    <!-- Settings screen: value for "default filter". Document screen: dropdown menu for filter -->
     <string name="color_mode_color">Color</string>
+    <!-- Settings screen -->
     <string name="color_mode_default">Default filter</string>
+    <!-- Settings screen: value for "default filter". Document screen: dropdown menu for filter -->
     <string name="color_mode_grayscale">Grayscale</string>
+    <!-- About screen -->
     <string name="contact">Contact</string>
+    <!-- About screen: appears as a toast -->
     <string name="copied_logs">Logs copied to clipboard</string>
+    <!-- About screen -->
     <string name="copy_logs">Copy logs</string>
+    <!-- Export screen: progress message -->
     <string name="creating_export">Preparing export…</string>
+    <!-- Icon description in the Document screen -->
     <string name="crop">Crop</string>
+    <!-- Icon description in the OCR languages screen -->
     <string name="delete">Delete</string>
+    <!-- Document screen: icon description and title of a confirmation dialog -->
     <string name="delete_page">Delete page</string>
+    <!-- Document screen: confirmation dialog -->
     <string name="delete_page_warning">Do you want to delete this page?</string>
+    <!-- About screen -->
     <string name="developer">Developer</string>
+    <!-- Localized name of the Android Download folder as it appears in the Files app (it ends with an "s" in English...)-->
     <string name="download_dirname">Downloads</string>
+    <!-- Export screen -->
     <string name="error_context_folder">Export folder: %1$s</string>
-    <!-- %1$s is the provider name -->
+    <!-- Export screen, %1$s is the provider name -->
     <string name="error_context_provider">Provider: %1$s</string>
+    <!-- Export screen -->
     <string name="error_export_dir_permission_lost">The selected export folder is no longer accessible. Please choose another folder.</string>
     <!-- Rare error messages should not be translated -->
     <string name="error_file_picker_launch" translatable="false">Failed to launch system file picker on this device</string>
     <string name="error_file_picker_result" translatable="false">Failed to set export directory</string>
+    <!-- Export screen: appears as a toast -->
     <string name="error_no_app">No app found to open this file</string>
+    <!-- Generic message for unexpected errors in various screens: appears as a toast -->
     <string name="error_occurred">An error occurred</string>
+    <!-- Export screen -->
     <string name="error_save">Failed to save file</string>
+    <!-- Document screen: button -->
     <string name="export">Export</string>
-    <!-- %1$s is the export format (PDF, JPEG...) -->
+    <!-- Export screen: title (%1$s is the export format: PDF, JPEG...) -->
     <string name="export_as">Export as %1$s</string>
+    <!-- Settings screen -->
     <string name="export_directory">Export folder</string>
+    <!-- Settings screen -->
     <string name="export_folder_permission_lost">Folder access lost</string>
+    <!-- Settings screen -->
     <string name="export_format">Export format</string>
+    <!-- Settings screen -->
     <string name="export_quality">Export quality</string>
+    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_low">Low</string>
+    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_balanced">Balanced</string>
+    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_high">High</string>
+    <!-- Export screen when exporting 1 file-->
     <string name="file_size">File size: %1$s</string>
+    <!-- Export screen when exporting more than 1 file -->
     <string name="file_size_total">Total size: %1$s</string>
+    <!-- Export screen: field label -->
     <string name="filename">Filename</string>
+    <!-- Camera screen: button -->
     <string name="grant_permission">Grant permission</string>
+    <!-- Camera screen: button -->
     <string name="import_photos">Import</string>
+    <!-- About screen -->
     <string name="libraries">Libraries</string>
+    <!-- Libraries screen title (reachable from the About screen) -->
     <string name="libraries_open_source">Open-source libraries</string>
+    <!-- About screen -->
     <string name="license">License</string>
+    <!-- About screen -->
     <string name="licensed_under">This application is licensed under the GNU General Public License v3.0.</string>
+    <!-- Icon description for ⋮ -->
     <string name="menu">Menu</string>
+    <!-- Export screen: dialog -->
     <string name="new_document_warning">The current scan will be lost. Do you want to continue?</string>
+    <!-- Export screen: button -->
     <string name="open">Open</string>
+    <!-- Export screen: text passed to the Android system when opening a file -->
     <string name="open_file">Open file</string>
+    <!-- Settings screen: when a non-default export folder is chosen -->
     <string name="reset_to_default">Reset to default</string>
+    <!-- Document screen: icon description -->
     <string name="rotate_left">Rotate left</string>
+    <!-- Document screen: icon description -->
     <string name="rotate_right">Rotate right</string>
+    <!-- Export screen: button -->
     <string name="save">Save</string>
+    <!-- Export screen: button. Resume scan screen: button -->
     <string name="scan_new">New Scan</string>
+    <!-- Resume scan screen -->
     <string name="scan_current">Current scan</string>
+    <!-- Resume scan screen -->
     <string name="scan_discard_current">Discard the current scan</string>
+    <!-- Resume scan screen: button -->
     <string name="scan_resume">Resume scan</string>
+    <!-- Settings screen: title. It's also an item of the ⋮ menu -->
     <string name="settings">Settings</string>
+    <!-- OCR Languages screen -->
     <string name="settings_ocr_download_error">Download failed. Check your internet connection and that network access is allowed for this app.</string>
+    <!-- OCR Languages screen -->
     <string name="settings_ocr_download_intro">"Language files are downloaded from the official Tesseract project. Text recognition remains fully offline."</string>
+    <!-- OCR Languages screen -->
     <string name="settings_ocr_downloading">Downloading language file</string>
+    <!-- OCR Languages screen: title -->
     <string name="settings_ocr_languages">Languages</string>
+    <!-- OCR Languages screen -->
     <string name="settings_ocr_languages_available">Available languages</string>
+    <!-- Settings screen -->
     <string name="settings_ocr_languages_disabled">Disabled</string>
+    <!-- OCR Languages screen -->
     <string name="settings_ocr_languages_installed">Installed</string>
+    <!-- OCR Languages screen. Marks the language matching the user's display language. At most one language is suggested. -->
     <string name="settings_ocr_suggested">Suggested</string>
+    <!-- Settings screen: section title -->
     <string name="settings_section_ocr">Text recognition</string>
+    <!-- Settings screen: section title -->
     <string name="settings_section_scan">Scan</string>
+    <!-- Settings screen: section title -->
     <string name="settings_section_export">Export</string>
+    <!-- Export screen: button -->
     <string name="share">Share</string>
+    <!-- Export screen: text passed to the Android system when sharing a file -->
     <string name="share_document">Share document</string>
+    <!-- Export screen -->
     <string name="storage_permission_denied">Cannot save file: permission was denied</string>
+    <!-- About screen -->
     <string name="support">Support</string>
+    <!-- About screen -->
     <string name="support_last_image">Report a problem with last captured image</string>
+    <!-- Export screen -->
     <string name="text_recognition_disabled">Text recognition: disabled</string>
+    <!-- Export screen -->
     <string name="text_recognition_enabled">Text recognition: enabled</string>
+    <!-- Camera screen -->
     <string name="turn_off_torch">Turn off torch</string>
+    <!-- Camera screen -->
     <string name="turn_on_torch">Turn on torch</string>
+    <!-- Export screen -->
     <string name="unknown_size">Unknown size</string>
+    <!-- About screen -->
     <string name="version">Version</string>
+    <!-- About screen -->
     <string name="view_full_list">View full list</string>
+    <!-- About screen -->
     <string name="view_the_full_license">View the full license</string>
+    <!-- Dialogs: button -->
     <string name="yes">Yes</string>
+    <!-- Export screen. %1$d: number of files; %2$s: file name; %3$s: folder name -->
     <plurals name="files_saved_to">
-        <!-- %2$s: file name; %3$s: folder name -->
         <item quantity="one">%2$s saved to %3$s</item>
-        <!-- %1$d: number of files; %3$s: folder name -->
         <item quantity="other">%1$d files saved to %3$s</item>
     </plurals>
+    <!-- Camera screen. %d: number of photos -->
     <plurals name="importing_photos">
         <item quantity="one">Importing 1 photo</item>
         <item quantity="other">Importing %d photos</item>
     </plurals>
+    <!-- Camera screen, Export screen, Resume scan screen. %d: number of pages -->
     <plurals name="page_count">
         <item quantity="one">%d page</item>
         <item quantity="other">%d pages</item>
