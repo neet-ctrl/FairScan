@@ -73,10 +73,12 @@ object DatasetEvaluator {
             val quad = detectDocumentQuad(mask, originalSize, isLiveAnalysis = false)
                 ?.scaledTo(mask.width, mask.height, inputMat.width(), inputMat.height())
 
-            if (quad == null) continue
-
-            val colorMode = autoColorMode(inputMat, mask, quad)
-            val corrected = extractDocument(inputMat, quad = quad, rotationDegrees = 0, colorMode, 2_000_000)
+            val corrected = if (quad == null)
+                inputMat.clone()
+            else {
+                val colorMode = autoColorMode(inputMat, mask, quad)
+                extractDocument(inputMat, quad = quad, rotationDegrees = 0, colorMode, 2_000_000)
+            }
 
             val inputOut = File(outputDir, "${e.name}_input.jpg")
             Imgcodecs.imwrite(inputOut.absolutePath, inputMat)
