@@ -48,7 +48,10 @@ fun detectDocumentQuad(mask: Mask, originalSize: ImageSize, isLiveAnalysis: Bool
             vertices = minAreaRect(polygon, mask.width, mask.height)
         }
     }
-    return if (vertices?.size == 4) createQuad(vertices) else null
+    val maskSize = ImageSize(mask.width, mask.height)
+    return if (vertices?.size == 4 && vertices.all { isInsideImage(it, maskSize) })
+        createQuad(vertices)
+    else null
 }
 
 fun findQuadFromOrientationWithAdaptiveThreshold(
@@ -68,7 +71,7 @@ fun findQuadFromOrientationWithAdaptiveThreshold(
         val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(5.0, 5.0))
         Imgproc.morphologyEx(bin, bin, Imgproc.MORPH_CLOSE, kernel)
         val quad = findQuadFromOrientation(bin, originalSize)
-        if (quad != null && isValidQuad(quad, originalSize)) {
+        if (quad != null) {
             val probFloat = Mat()
             probmap.convertTo(probFloat, CvType.CV_32F)
             val score = scoreQuadAgainstProbmap(quad, probFloat, minQuadAreaRatio = 0.02)
@@ -85,11 +88,9 @@ fun findQuadFromOrientationWithAdaptiveThreshold(
     return bestQuad
 }
 
-fun isValidQuad(quad: List<org.opencv.core.Point>, originalSize: ImageSize): Boolean {
-    return quad.all {
-          it.x >= 0 && it.x <= originalSize.width
-       && it.y >= 0 && it.y <= originalSize.height
-    }
+fun isInsideImage(p: Point, imageSize: ImageSize): Boolean {
+    return p.x >= 0 && p.x <= imageSize.width
+       && p.y >= 0 && p.y <= imageSize.height
 }
 
 fun findQuadFromOrientation(maskMat: Mat, originalSize: ImageSize): List<org.opencv.core.Point>? {
@@ -99,6 +100,8 @@ fun findQuadFromOrientation(maskMat: Mat, originalSize: ImageSize): List<org.ope
     val scaleX = originalSize.width / maskMat.size().width
     val scaleY = originalSize.height / maskMat.size().height
 
+    // The mask may have a different width/height ratio than the original image.
+    // It's crucial for angles that the width/height ratio is the one of the original image.
     return findQuadFromContourOrientation(
         contour.toList().map { org.opencv.core.Point(it.x * scaleX, it.y * scaleY) }
     )?.map { org.opencv.core.Point(it.x / scaleX, it.y / scaleY) }
