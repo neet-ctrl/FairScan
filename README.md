@@ -38,6 +38,17 @@ Contributions are welcome, but please read the guidelines first: [CONTRIBUTING.m
 
 ---
 
+## Translations
+
+Translations are managed on Weblate, and everyone is welcome to contribute.
+
+[![Translation status](https://hosted.weblate.org/widget/fairscan/android-app/language-badge.svg?threshold=95)](https://hosted.weblate.org/engage/fairscan/)
+
+Start translating:
+https://hosted.weblate.org/projects/fairscan/
+
+---
+
 ## Screenshots
 
 | Scan | Preview | Save & Share |
