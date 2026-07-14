@@ -1,201 +1,100 @@
 <resources>
-    <!-- About screen: title. It's also an item of the ⋮ menu -->
     <string name="about">Tentang</string>
-    <!-- Button in the Document screen -->
     <string name="add_page">Tambahkan halaman</string>
-    <!-- Header in the About screen -->
-    <string name="app_name" translatable="false">FairScan</string>
-    <!--
-    Appears in the About screen.
-    "Simple" means easy to use, with no unnecessary complexity. You can scan a document and get a PDF in just a few seconds.
-    "Respectful" is not only about privacy, but also: no ads, no tracking, no artificial limitations (e.g. watermark), minimal permissions...
-    Please preserve the broad meaning of "respectful". It is a key part of FairScan's philosophy and should not be translated as "privacy-friendly" only.
-    -->
     <string name="app_tagline">Aplikasi sederhana dan aman untuk memindai dokumen Anda</string>
-    <!-- Button in the Crop screen -->
     <string name="apply">Terapkan</string>
-    <!-- Icon description for ← at the top-left -->
     <string name="back">Kembali</string>
-    <!-- Error message (as a toast) -->
     <string name="camera_permission_denied">Izin penggunaan kamera ditolak</string>
-    <!-- Appears on the Camera screen -->
     <string name="camera_permission_rationale">Aplikasi ini memerlukan akses kamera untuk memindai dokumen. Gambar yang diambil hanya disimpan di perangkat ini dan akan dihapus saat Anda menutup pemindaian saat ini.</string>
-    <!-- Button in dialogs -->
     <string name="cancel">Batalkan</string>
-    <!-- Icon description 🗁 -->
     <string name="change_directory">Ganti folder</string>
-    <!-- Icon description ✖ in the filename field of the Export screen -->
     <string name="clear_text">Bersihkan teks</string>
-    <!-- Button in OCR download dialog -->
     <string name="close">Tutup</string>
-    <!-- Icon description in the Document screen -->
     <string name="color_mode">Filter</string>
-    <!-- Settings screen -->
     <string name="color_mode_auto">Otomatis</string>
-    <!-- Settings screen: value for "default filter". Document screen: dropdown menu for filter -->
     <string name="color_mode_color">Warna</string>
-    <!-- Settings screen -->
     <string name="color_mode_default">Filter bawaan</string>
-    <!-- Settings screen: value for "default filter". Document screen: dropdown menu for filter -->
     <string name="color_mode_grayscale">Abu-abu</string>
-    <!-- About screen -->
     <string name="contact">Kontak</string>
-    <!-- About screen: appears as a toast -->
     <string name="copied_logs">Log disalin ke papan klip</string>
-    <!-- About screen -->
     <string name="copy_logs">Salin log</string>
-    <!-- Export screen: progress message -->
     <string name="creating_export">Mempersiapkan ekspor…</string>
-    <!-- Icon description in the Document screen -->
     <string name="crop">Potong</string>
-    <!-- Icon description in the OCR languages screen -->
     <string name="delete">Hapus</string>
-    <!-- Document screen: icon description and title of a confirmation dialog -->
     <string name="delete_page">Hapus halaman</string>
-    <!-- Document screen: confirmation dialog -->
     <string name="delete_page_warning">Apakah Anda ingin menghapus halaman ini?</string>
-    <!-- About screen -->
     <string name="developer">Pengembang</string>
-    <!-- Localized name of the Android Download folder as it appears in the Files app (it ends with an "s" in English...)-->
     <string name="download_dirname">Undugan</string>
-    <!-- Export screen -->
     <string name="error_context_folder">Folder ekspor %1$s</string>
-    <!-- Export screen, %1$s is the provider name -->
     <string name="error_context_provider">Penyedia: %1$s</string>
-    <!-- Export screen -->
     <string name="error_export_dir_permission_lost">Folder ekspor yang dipilih tidak lagi dapat diakses. Silakan pilih folder lain.</string>
-    <!-- Rare error messages should not be translated -->
-    <string name="error_file_picker_launch" translatable="false">Gagal meluncurkan pemilih file sistem pada perangkat ini.</string>
-    <string name="error_file_picker_result" translatable="false">Gagal mengatur direktori ekspor</string>
-    <!-- Export screen: appears as a toast -->
     <string name="error_no_app">Tidak ditemukan aplikasi untuk membuka file ini.</string>
-    <!-- Generic message for unexpected errors in various screens: appears as a toast -->
     <string name="error_occurred">Terjadi kesalahan</string>
-    <!-- Export screen -->
     <string name="error_save">Gagal menyimpan file</string>
-    <!-- Document screen: button -->
     <string name="export">Ekspor</string>
-    <!-- Export screen: title (%1$s is the export format: PDF, JPEG...) -->
     <string name="export_as">Ekspor sebagai %1$s</string>
-    <!-- Settings screen -->
     <string name="export_directory">Folder ekspor</string>
-    <!-- Settings screen -->
     <string name="export_folder_permission_lost">Akses folder hilang</string>
-    <!-- Settings screen -->
     <string name="export_format">Format ekspor</string>
-    <!-- Settings screen -->
     <string name="export_quality">Kualitas ekspor</string>
-    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_low">Rendah</string>
-    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_balanced">Sedang</string>
-    <!-- Settings screen: one of the values for "export quality" -->
     <string name="export_quality_high">Tinggi</string>
-    <!-- Export screen when exporting 1 file-->
     <string name="file_size">Ukuran file: %1$s</string>
-    <!-- Export screen when exporting more than 1 file -->
     <string name="file_size_total">Ukuran total: %1$s</string>
-    <!-- Export screen: field label -->
     <string name="filename">Nama file</string>
-    <!-- Camera screen: button -->
     <string name="grant_permission">Berikan izin</string>
-    <!-- Camera screen: button -->
     <string name="import_photos">Impor</string>
-    <!-- About screen -->
     <string name="libraries">Perpustakaan</string>
-    <!-- Libraries screen title (reachable from the About screen) -->
     <string name="libraries_open_source">Pustaka sumber terbuka</string>
-    <!-- About screen -->
     <string name="license">Lisensi</string>
-    <!-- About screen -->
     <string name="licensed_under">Aplikasi ini dilisensikan berdasarkan Lisensi Publik Umum GNU v3.0.</string>
-    <!-- Icon description for ⋮ -->
     <string name="menu">Menu</string>
-    <!-- Export screen: dialog -->
     <string name="new_document_warning">Pemindaian saat ini akan hilang. Apakah Anda ingin melanjutkan?</string>
-    <!-- Export screen: button -->
     <string name="open">Buka</string>
-    <!-- Export screen: text passed to the Android system when opening a file -->
     <string name="open_file">Buka file</string>
-    <!-- Settings screen: when a non-default export folder is chosen -->
     <string name="reset_to_default">Kembalikan ke bawaan</string>
-    <!-- Document screen: icon description -->
     <string name="rotate_left">Putar ke kiri</string>
-    <!-- Document screen: icon description -->
     <string name="rotate_right">Putar ke kanan</string>
-    <!-- Export screen: button -->
     <string name="save">Simpan</string>
-    <!-- Export screen: button. Resume scan screen: button -->
     <string name="scan_new">Pindai baru</string>
-    <!-- Resume scan screen -->
     <string name="scan_current">Pindaian terkini</string>
-    <!-- Resume scan screen -->
     <string name="scan_discard_current">Abaikan pemindaian saat ini.</string>
-    <!-- Resume scan screen: button -->
     <string name="scan_resume">Ulangi pemindaian</string>
-    <!-- Settings screen: title. It's also an item of the ⋮ menu -->
     <string name="settings">Pengaturan</string>
-    <!-- OCR Languages screen -->
     <string name="settings_ocr_download_error">Pengunduhan gagal. Periksa koneksi internet Anda dan pastikan akses jaringan diizinkan untuk aplikasi ini.</string>
-    <!-- OCR Languages screen -->
     <string name="settings_ocr_download_intro">"Berkas bahasa diunduh dari proyek resmi Tesseract. Pengenalan teks tetap sepenuhnya offline."</string>
-    <!-- OCR Languages screen -->
     <string name="settings_ocr_downloading">Mengunduh berkas bahasa</string>
-    <!-- OCR Languages screen: title -->
     <string name="settings_ocr_languages">Bahasa</string>
-    <!-- OCR Languages screen -->
     <string name="settings_ocr_languages_available">Bahasa yang tersedia</string>
-    <!-- Settings screen -->
     <string name="settings_ocr_languages_disabled">Matikan</string>
-    <!-- OCR Languages screen -->
     <string name="settings_ocr_languages_installed">Terpasang</string>
-    <!-- OCR Languages screen. Marks the language matching the user's display language. At most one language is suggested. -->
     <string name="settings_ocr_suggested">Disarankan</string>
-    <!-- Settings screen: section title -->
     <string name="settings_section_ocr">Pengenalan teks</string>
-    <!-- Settings screen: section title -->
     <string name="settings_section_scan">Pindah</string>
-    <!-- Settings screen: section title -->
     <string name="settings_section_export">Ekspor</string>
-    <!-- Export screen: button -->
     <string name="share">Bagikan</string>
-    <!-- Export screen: text passed to the Android system when sharing a file -->
     <string name="share_document">Bagikan dokumen</string>
-    <!-- Export screen -->
     <string name="storage_permission_denied">Tidak dapat menyimpan file: izin ditolak.</string>
-    <!-- About screen -->
     <string name="support">Dukung</string>
-    <!-- About screen -->
     <string name="support_last_image">Laporkan masalah pada gambar yang terakhir diambil</string>
-    <!-- Export screen -->
     <string name="text_recognition_disabled">Pengenalan teks: matikan</string>
-    <!-- Export screen -->
     <string name="text_recognition_enabled">Pengenalan teks: diaktifkan</string>
-    <!-- Camera screen -->
     <string name="turn_off_torch">Matikan senter</string>
-    <!-- Camera screen -->
     <string name="turn_on_torch">Hidupkan senter</string>
-    <!-- Export screen -->
     <string name="unknown_size">Ukuran tidak diketahui</string>
-    <!-- About screen -->
     <string name="version">Versi</string>
-    <!-- About screen -->
     <string name="view_full_list">Lihat daftar lengkap</string>
-    <!-- About screen -->
     <string name="view_the_full_license">Lihat lisensi lengkapnya</string>
-    <!-- Dialogs: button -->
     <string name="yes">Yes</string>
-    <!-- Export screen. %1$d: number of files; %2$s: file name; %3$s: folder name -->
     <plurals name="files_saved_to">
         <item quantity="one">%2$s disimpan ke %3$s</item>
         <item quantity="other">%1$d berkas yang disimpan ke %3$s</item>
     </plurals>
-    <!-- Camera screen. %d: number of photos -->
     <plurals name="importing_photos">
         <item quantity="one">Impor 1 foto</item>
         <item quantity="other">Mengimpor %d foto</item>
     </plurals>
-    <!-- Camera screen, Export screen, Resume scan screen. %d: number of pages -->
     <plurals name="page_count">
         <item quantity="one">%d halaman</item>
         <item quantity="other">%d halaman</item>
