@@ -33,14 +33,19 @@ interface Mask {
     fun toMat(): Mat
 }
 
-fun detectDocumentQuad(mask: Mask, originalSize: ImageSize, isLiveAnalysis: Boolean): Quad? {
+enum class Mode {
+    CAPTURE, IMPORT, LIVE_ANALYSIS
+}
+
+fun detectDocumentQuad(mask: Mask, originalSize: ImageSize, mode: Mode): Quad? {
     val mat = mask.toMat()
     // Best thresholds on test dataset: {0.95=146, 0.85=39, 0.75=35, 0.90=8, 0.70=1, 0.35=1}
     val thresholds =
-        if (isLiveAnalysis) listOf(0.9) else listOf(0.5, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95)
+        if (mode != Mode.CAPTURE) listOf(0.9) else listOf(0.5, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95)
     var vertices = findQuadFromOrientationWithAdaptiveThreshold(mat, originalSize, thresholds)
         ?.map { Point(it.x, it.y) }
-    if (vertices == null && !isLiveAnalysis) {
+
+    if (vertices == null && mode == Mode.CAPTURE) {
         // Fallback: bounding rectangle
         val biggest = biggestContour(mat)
         if (biggest != null) {

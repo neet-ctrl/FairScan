@@ -32,7 +32,7 @@ fun findQuadFromContourOrientation(
     smoothWindow: Int = 5,
     maxAngleVar: Double = Math.toRadians(5.0),
     mergeAngle: Double = Math.toRadians(7.0),
-    minSideLengthRatio: Double = 0.02
+    minSideLengthRatio: Double = 0.03
 ): List<Point>? {
 
     if (contour.size < 20) return null

@@ -15,6 +15,7 @@
 package org.fairscan.evaluation
 
 import org.fairscan.imageprocessing.ColorMode
+import org.fairscan.imageprocessing.Mode
 import org.fairscan.imageprocessing.detectDocumentQuad
 import org.fairscan.imageprocessing.extractDocument
 import org.fairscan.imageprocessing.autoColorMode
@@ -59,7 +60,7 @@ object ColorDetectionEvaluator {
 
             val mask = MatMask(maskMat)
 
-            val quad = detectDocumentQuad(mask, mat.size().toImageSize(), isLiveAnalysis = false)
+            val quad = detectDocumentQuad(mask, mat.size().toImageSize(), Mode.CAPTURE)
                 ?.scaledTo(mask.width, mask.height, mat.width(), mat.height())
 
             if (quad == null) continue
