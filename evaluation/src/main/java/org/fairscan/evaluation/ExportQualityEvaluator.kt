@@ -14,6 +14,7 @@
  */
 package org.fairscan.evaluation
 
+import org.fairscan.imageprocessing.Mode
 import org.fairscan.imageprocessing.detectDocumentQuad
 import org.fairscan.imageprocessing.extractDocument
 import org.fairscan.imageprocessing.autoColorMode
@@ -58,7 +59,7 @@ object ExportQualityEvaluator {
             val mask = MatMask(maskMat)
 
             val originalSize = sourceMat.size().toImageSize()
-            val quad = detectDocumentQuad(mask, originalSize, isLiveAnalysis = false)
+            val quad = detectDocumentQuad(mask, originalSize, Mode.CAPTURE)
                 ?.scaledTo(mask.width, mask.height, sourceMat.width(), sourceMat.height())
             if (quad == null) {
                 println("Failed to detect quad for $imgName")

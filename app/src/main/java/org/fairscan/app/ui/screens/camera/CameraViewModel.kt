@@ -35,6 +35,7 @@ import org.fairscan.app.AppContainer
 import org.fairscan.app.domain.CapturedPage
 import org.fairscan.app.platform.extractDocumentFromBitmap
 import org.fairscan.imageprocessing.ImageSize
+import org.fairscan.imageprocessing.Mode
 import org.fairscan.imageprocessing.OpticalMeasures
 import org.fairscan.imageprocessing.detectDocumentQuad
 import java.util.concurrent.CancellationException
@@ -112,7 +113,7 @@ class CameraViewModel(appContainer: AppContainer): ViewModel() {
                 val maskSize = segmentation.maskSize()
                 val originalSize = ImageSize(imageProxy.width, imageProxy.height)
                 val rawQuad = withContext(Dispatchers.Default) {
-                    detectDocumentQuad(segmentation, originalSize, isLiveAnalysis = true)
+                    detectDocumentQuad(segmentation, originalSize, Mode.LIVE_ANALYSIS)
                         ?.rotate90(rotationDegrees / 90, maskSize)
                 }
                 val binaryMaskProvider = { ->
@@ -141,7 +142,8 @@ class CameraViewModel(appContainer: AppContainer): ViewModel() {
                 try {
                     val source = imageProxy.toBitmap()
                     val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-                    val page = processCapturedImage(source, rotationDegrees, opticalMeasures)
+                    val page =
+                        processCapturedImage(source, rotationDegrees, opticalMeasures, Mode.CAPTURE)
                     imageProxy.close()
                     onCaptureProcessed(page)
                 } catch (e: RuntimeException) {
@@ -158,11 +160,12 @@ class CameraViewModel(appContainer: AppContainer): ViewModel() {
         source: Bitmap,
         rotationDegrees: Int,
         opticalMeasures: OpticalMeasures?,
+        mode: Mode,
     ): CapturedPage = withContext(Dispatchers.IO) {
         val segmentation = imageSegmentationService.runSegmentationAndReturn(source)
         val mask = segmentation?.segmentation
         val originalSize = ImageSize(source.width, source.height)
-        val quad = mask?.let { detectDocumentQuad(mask, originalSize, isLiveAnalysis = false) }
+        val quad = mask?.let { detectDocumentQuad(mask, originalSize, mode) }
         val defaultColorMode = settingsRepository.defaultColorMode.first()
         val result = extractDocumentFromBitmap(
             source, quad, rotationDegrees, mask, viewModelScope, defaultColorMode, opticalMeasures)
@@ -206,7 +209,7 @@ class CameraViewModel(appContainer: AppContainer): ViewModel() {
                 try {
                     val photoToImport = imageLoader.load(uri)
                     ensureActive()
-                    val page = processCapturedImage(photoToImport, 0, null)
+                    val page = processCapturedImage(photoToImport, 0, null, Mode.IMPORT)
                     ensureActive()
                     _events.emit(CameraEvent.ImageCaptured(page))
                 } catch (e: CancellationException) {
