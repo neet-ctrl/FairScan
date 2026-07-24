@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ORG_GRADLE_PROJECT_RELEASE_STORE_FILE: app/keystore/my-release-key.jks
+      ORG_GRADLE_PROJECT_RELEASE_STORE_FILE: keystore/my-release-key.jks
       ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: Sh@090609
       ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS: my-key
       ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: Sh@090609

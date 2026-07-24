@@ -1,0 +1,99 @@
+2m 14s
+Run ./gradlew assembleRelease --no-daemon -x lint -x lintVitalRelease -x test -x check
+Downloading https://services.gradle.org/distributions/gradle-8.13-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.13!
+
+Here are the highlights of this release:
+ - Daemon JVM auto-provisioning
+ - Enhancements for Scala plugin and JUnit testing
+ - Improvements for build authors and plugin developers
+
+For more details see https://docs.gradle.org/8.13/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :imageprocessing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :imageprocessing:processResources NO-SOURCE
+
+> Task :app:downloadTFLiteModel
+Downloading fairscan-segmentation-model.tflite from https://github.com/pynicolas/fairscan-segmentation-model/releases/download/v1.2.0/fairscan-segmentation-model.tflite
+
+> Task :app:copyTFLiteToAssets
+> Task :app:preBuild
+> Task :app:preReleaseBuild
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:buildKotlinToolingMetadata
+> Task :imageprocessing:compileKotlin
+> Task :imageprocessing:compileJava NO-SOURCE
+> Task :imageprocessing:classes UP-TO-DATE
+> Task :imageprocessing:jar
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateReleaseBuildConfig
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mergeReleaseNativeLibs
+> Task :app:prepareLibraryDefinitionsRelease
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libc++_shared.so, libdatastore_shared_counter.so, libimage_processing_util_jni.so, libjpeg.so, libleptonica.so, libopencv_java4.so, libpngx.so, libsurface_util_jni.so, libtensorflowlite_jni.so, libtesseract.so. Run with --info option to learn more.
+
+> Task :app:packageReleaseResources
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseResources
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+
+> Task :app:processReleaseMainManifest
+[com.google.ai.edge.litert:litert-support:1.4.1] /home/runner/.gradle/caches/8.13/transforms/d577d4e2ca7e846c17c8d5c6b60d59eb/transformed/litert-support-1.4.1/AndroidManifest.xml Warning:
+	Namespace 'org.tensorflow.lite.support' is used in multiple modules and/or libraries: com.google.ai.edge.litert:litert-support:1.4.1, com.google.ai.edge.litert:litert-support-api:1.4.1. Please ensure that all modules and libraries have a unique namespace. For more information, See https://developer.android.com/studio/build/configure-app-module#set-namespace
+
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:javaPreCompileRelease
+> Task :app:mergeReleaseArtProfile
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:compressReleaseAssets
+> Task :app:processReleaseResources
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease FAILED
+
+> Task :app:compileReleaseKotlin
+w: file:///home/runner/work/FairScan/FairScan/app/src/main/java/org/fairscan/app/ui/screens/LibrariesScreen.kt:52:35 'fun rememberLibraries(resId: Int): State<Libs?>' is deprecated. Use produceLibraries(resId).
+
+
+[Incubating] Problems report is available at: file:///home/runner/work/FairScan/FairScan/build/reports/problems/problems-report.html
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+
+Execution failed for task ':app:validateSigningRelease'.
+> Keystore file '/home/runner/work/FairScan/FairScan/app/app/keystore/my-release-key.jks' not found for signing config 'release'.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+* Try:
+
+> Run with --stacktrace option to get the stack trace.
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 12s
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+37 actionable tasks: 37 executed
+Error: Process completed with exit code 1.

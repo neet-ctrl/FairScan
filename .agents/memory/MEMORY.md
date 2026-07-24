@@ -1,0 +1,1 @@
+- [Gradle signing paths](gradle-signing-paths.md) — signing files passed to an Android module resolve relative to that module.
