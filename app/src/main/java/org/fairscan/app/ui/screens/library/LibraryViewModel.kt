@@ -125,6 +125,21 @@ class LibraryViewModel(container: AppContainer) : ViewModel() {
         }
     }
 
+    fun mergeSelected(newName: String) {
+        val ids = _uiState.value.selectedIds.toList()
+        if (ids.size < 2) return
+        viewModelScope.launch {
+            libraryRepository.mergeDocuments(ids, newName)
+            _uiState.update { state ->
+                state.copy(
+                    selectedIds = emptySet(),
+                    isSelectionMode = false,
+                    snackbarMessage = "Merged into \"$newName\"",
+                )
+            }
+        }
+    }
+
     fun dismissSnackbar() {
         _uiState.update { it.copy(snackbarMessage = null) }
     }

@@ -175,6 +175,88 @@ class LibraryRepository(val filesDir: File) {
             newInfo
         }
 
+    /**
+     * Merges the documents identified by [ids] into a single new document named [newName].
+     * Pages from each source document are concatenated in creation-date order.
+     * The source documents are deleted after the merge.
+     */
+    suspend fun mergeDocuments(ids: List<String>, newName: String): LibraryDocumentInfo? =
+        withContext(Dispatchers.IO) {
+            if (ids.size < 2) return@withContext null
+
+            val newId = (System.currentTimeMillis() + 2).toString()
+            val newDir = File(libraryDir, newId).apply { mkdirs() }
+            val newScannedDir = File(newDir, "scanned_pages").apply { mkdirs() }
+            val newSourceDir = File(newDir, "sources").apply { mkdirs() }
+
+            val allPages = mutableListOf<PageV2>()
+            var coverBytes: ByteArray? = null
+
+            // Sort by creation date so the oldest doc's pages come first
+            val orderedIds = ids.mapNotNull { id -> _documents.value.find { it.id == id } }
+                .sortedBy { it.createdAt }
+                .map { it.id }
+
+            for ((index, id) in orderedIds.withIndex()) {
+                val docDir = File(libraryDir, id)
+                if (!docDir.exists()) continue
+
+                // Take cover from the first document
+                if (index == 0) {
+                    val coverFile = File(docDir, "cover.jpg")
+                    if (coverFile.exists()) coverBytes = coverFile.readBytes()
+                }
+
+                // Copy processed images
+                val scannedDir = File(docDir, "scanned_pages")
+                scannedDir.listFiles()?.forEach { file ->
+                    if (file.name != "document.json") {
+                        file.copyTo(File(newScannedDir, file.name), overwrite = true)
+                    }
+                }
+
+                // Copy source images
+                val sourceDir = File(docDir, "sources")
+                sourceDir.listFiles()?.forEach { file ->
+                    file.copyTo(File(newSourceDir, file.name), overwrite = true)
+                }
+
+                // Read and concatenate page metadata
+                val metadataFile = File(scannedDir, "document.json")
+                if (metadataFile.exists()) {
+                    runCatching {
+                        val parsed = json.decodeFromString<DocumentMetadataV2>(metadataFile.readText())
+                        allPages.addAll(parsed.pages)
+                    }
+                }
+            }
+
+            // Write merged document.json
+            File(newScannedDir, "document.json")
+                .writeText(json.encodeToString(DocumentMetadataV2.serializer(), DocumentMetadataV2(pages = allPages)))
+
+            // Write cover
+            if (coverBytes != null) {
+                File(newDir, "cover.jpg").writeBytes(coverBytes)
+            }
+
+            val now = System.currentTimeMillis()
+            val newInfo = LibraryDocumentInfo(
+                id = newId,
+                name = newName,
+                createdAt = now,
+                modifiedAt = now,
+                pageCount = allPages.size,
+            )
+
+            // Remove old documents from disk and index, add merged
+            val idsSet = orderedIds.toSet()
+            orderedIds.forEach { File(libraryDir, it).deleteRecursively() }
+            _documents.value = listOf(newInfo) + _documents.value.filter { it.id !in idsSet }
+            saveIndex()
+            newInfo
+        }
+
     fun getCoverBytes(id: String): ByteArray? {
         val cover = File(File(libraryDir, id), "cover.jpg")
         return if (cover.exists()) runCatching { cover.readBytes() }.getOrNull() else null

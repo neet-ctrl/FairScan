@@ -63,7 +63,7 @@ fun DocumentScreen(
     uiState: DocumentUiState,
     navigation: Navigation,
     onExportClick: () -> Unit,
-    onSaveToLibraryClick: (() -> Unit)?,
+    onSaveToLibraryClick: ((String) -> Unit)?,
     onDeleteImage: () -> Unit,
     onRotateImage: (Boolean) -> Unit,
     onToggleColorMode: () -> Unit,
@@ -102,7 +102,7 @@ fun DocumentScreen(
             onNameChange = { saveDocumentName = it },
             onConfirm = {
                 showSaveDialog.value = false
-                onSaveToLibraryClick?.invoke()
+                onSaveToLibraryClick?.invoke(saveDocumentName)
             },
             onDismiss = { showSaveDialog.value = false },
         )

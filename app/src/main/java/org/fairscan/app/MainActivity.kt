@@ -36,6 +36,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -184,7 +189,14 @@ class MainActivity : ComponentActivity() {
                     navigation.toExportScreen
                 }
 
-                when (currentScreen) {
+                AnimatedContent(
+                    targetState = currentScreen,
+                    transitionSpec = {
+                        fadeIn(tween(220)) togetherWith fadeOut(tween(180))
+                    },
+                    label = "main_screen",
+                ) { screen ->
+                when (screen) {
                     null -> {
                         // waiting to load pages to get an initial screen
                     }
@@ -209,11 +221,16 @@ class MainActivity : ComponentActivity() {
                             },
                             onToggleSelection = libraryViewModel::toggleSelection,
                             onDeleteSelected = libraryViewModel::deleteSelected,
+                            onSelectAll = libraryViewModel::selectAll,
+                            onMergeSelected = libraryViewModel::mergeSelected,
                             onClearSelection = libraryViewModel::clearSelection,
                             onDeleteDocument = libraryViewModel::deleteDocument,
                             onRenameDocument = libraryViewModel::renameDocument,
                             onDuplicateDocument = libraryViewModel::duplicateDocument,
                             onNewScan = navigation.toCameraScreen,
+                            onScanClick = navigation.toCameraScreen,
+                            onSettingsClick = navigation.toSettingsScreen ?: {},
+                            onAboutClick = navigation.toAboutScreen,
                             onResumeScan = navigation.toDocumentScreen,
                             onSearchQueryChange = libraryViewModel::setSearchQuery,
                             onSortOrderChange = libraryViewModel::setSortOrder,
@@ -264,7 +281,7 @@ class MainActivity : ComponentActivity() {
                             navigation = navigation,
                             onExportClick = onExportClick,
                             onSaveToLibraryClick = if (launchMode != LaunchMode.EXTERNAL_SCAN_TO_PDF) {
-                                { /* name collected inside DocumentScreen dialog */ }
+                                { name -> viewModel.saveToLibrary(name) }
                             } else null,
                             onDeleteImage = { viewModel.deleteCurrentPage() },
                             onRotateImage = { clockwise -> viewModel.rotateCurrentPage(clockwise) },
@@ -344,6 +361,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
+                } // end AnimatedContent
             }
         }
     }
