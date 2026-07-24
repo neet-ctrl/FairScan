@@ -201,7 +201,7 @@ fun BigButton(onClick: () -> Unit, text: String) {
 @Preview(showBackground = true, widthDp = 640, heightDp = 320)
 @Composable
 fun ResumeScanScreenPreview() {
-    val image = fakeImage("gallica.bnf.fr-bpt6k5530456s-1", LocalContext.current).toBitmap()
+    val image = fakeImage("gallica.bnf.fr-bpt6k5530456s-1", LocalContext.current)
     val document = fakeDocument(
         listOf(1, 2).map { "gallica.bnf.fr-bpt6k5530456s-$it" }.toImmutableList(),
         LocalContext.current

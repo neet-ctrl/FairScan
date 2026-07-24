@@ -44,6 +44,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.toClipEntry
@@ -202,7 +205,7 @@ class MainActivity : ComponentActivity() {
                     }
                     is Screen.Main.Onboarding -> {
                         OnboardingScreen(
-                            onFinished = {
+                            onFinish = {
                                 lifecycleScope.launch {
                                     appContainer.settingsRepository.setOnboardingDone(true)
                                 }
