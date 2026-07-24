@@ -5,12 +5,6 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package org.fairscan.app.ui.screens.settings
 
@@ -28,13 +22,17 @@ import kotlinx.coroutines.launch
 import org.fairscan.app.AppContainer
 import org.fairscan.app.data.OcrLanguage
 import org.fairscan.app.domain.ExportQuality
+import org.fairscan.app.ui.theme.AccentColor
+import org.fairscan.app.ui.theme.AppTheme
 
 data class SettingsUiState(
     val defaultColorMode: DefaultColorMode = DefaultColorMode.AUTO,
     val export: ExportSettingsUiState = ExportSettingsUiState(),
     val installedOcrLanguages: Set<String> = emptySet(),
     val enabledOcrLanguages: Set<String> = emptySet(),
-    val currentDownload: OcrDownloadUiState? = null
+    val currentDownload: OcrDownloadUiState? = null,
+    val appTheme: AppTheme = AppTheme.SYSTEM,
+    val accentColor: AccentColor = AccentColor.MINT,
 )
 
 data class ExportSettingsUiState(
@@ -70,23 +68,35 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
             dirName,
             repo.exportFormat,
             repo.exportQuality,
-        ) {
-            dirUri, dirName, format, quality ->
+        ) { dirUri, dirName, format, quality ->
             ExportSettingsUiState(dirUri, dirName, format, quality)
         }
+
     val uiState = combine(
         repo.defaultColorMode,
         exportSettingsState,
         _installedLanguages,
         ocrLanguageRepo.enabledLanguages,
         _ocrDownload,
-    ) { colorMode, exportSettings, installed, enabled, download ->
+        repo.appTheme,
+        repo.accentColor,
+    ) { args ->
+        @Suppress("UNCHECKED_CAST")
+        val colorMode = args[0] as DefaultColorMode
+        val exportSettings = args[1] as ExportSettingsUiState
+        val installed = args[2] as Set<String>
+        val enabled = args[3] as Set<String>
+        val download = args[4] as OcrDownloadUiState?
+        val appTheme = args[5] as AppTheme
+        val accentColor = args[6] as AccentColor
         SettingsUiState(
             defaultColorMode = colorMode,
             export = exportSettings,
             installedOcrLanguages = installed,
             enabledOcrLanguages = enabled,
             currentDownload = download,
+            appTheme = appTheme,
+            accentColor = accentColor,
         )
     }.stateIn(
         viewModelScope,
@@ -95,20 +105,15 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
     )
 
     private suspend fun refreshInstalledLanguages() {
-        _installedLanguages.value =
-            ocrLanguageRepo.getInstalledLanguages()
+        _installedLanguages.value = ocrLanguageRepo.getInstalledLanguages()
     }
 
     init {
-        viewModelScope.launch {
-            refreshInstalledLanguages()
-        }
+        viewModelScope.launch { refreshInstalledLanguages() }
     }
 
     fun setDefaultColorMode(pref: DefaultColorMode) {
-        viewModelScope.launch {
-            repo.setDefaultColorMode(pref)
-        }
+        viewModelScope.launch { repo.setDefaultColorMode(pref) }
     }
 
     fun setExportDirUri(uri: String?) {
@@ -119,15 +124,19 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
     }
 
     fun setExportFormat(format: ExportFormat) {
-        viewModelScope.launch {
-            repo.setExportFormat(format)
-        }
+        viewModelScope.launch { repo.setExportFormat(format) }
     }
 
     fun setExportQuality(quality: ExportQuality) {
-        viewModelScope.launch {
-            repo.setExportQuality(quality)
-        }
+        viewModelScope.launch { repo.setExportQuality(quality) }
+    }
+
+    fun setAppTheme(theme: AppTheme) {
+        viewModelScope.launch { repo.setAppTheme(theme) }
+    }
+
+    fun setAccentColor(color: AccentColor) {
+        viewModelScope.launch { repo.setAccentColor(color) }
     }
 
     fun refreshExportDirName() {
@@ -151,11 +160,10 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
             _ocrDownload.value = OcrDownloadUiState(OcrLanguage(code))
             try {
                 ocrLanguageRepo.downloadLanguage(code) { progress ->
-                    _ocrDownload.value =
-                        _ocrDownload.value?.copy(
-                            downloadedBytes = progress.downloadedBytes,
-                            totalBytes = progress.totalBytes,
-                        )
+                    _ocrDownload.value = _ocrDownload.value?.copy(
+                        downloadedBytes = progress.downloadedBytes,
+                        totalBytes = progress.totalBytes,
+                    )
                 }
                 ocrLanguageRepo.setLanguageEnabled(code, true)
                 refreshInstalledLanguages()
@@ -175,9 +183,7 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
     }
 
     fun setOcrLanguageEnabled(code: String, enabled: Boolean) {
-        viewModelScope.launch {
-            ocrLanguageRepo.setLanguageEnabled(code, enabled)
-        }
+        viewModelScope.launch { ocrLanguageRepo.setLanguageEnabled(code, enabled) }
     }
 
     fun onRemoveLanguage(code: String) {

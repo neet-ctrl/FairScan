@@ -177,6 +177,61 @@
     <string name="turn_on_torch">Turn on torch</string>
     <!-- Export screen -->
     <string name="unknown_size">Unknown size</string>
+    <!-- Library screen: bottom nav label -->
+    <string name="library">Library</string>
+    <!-- Library screen: empty state heading when no documents are saved -->
+    <string name="library_empty">Your library is empty</string>
+    <!-- Library screen: empty state body -->
+    <string name="library_empty_hint">Scan a document and save it to build your library</string>
+    <!-- Library screen: unfinished session banner title -->
+    <string name="library_continue_scanning">Continue scanning</string>
+    <!-- Library screen: unfinished session banner subtitle (%d = page count) -->
+    <plurals name="library_unsaved_pages">
+        <item quantity="one">%d page not yet saved</item>
+        <item quantity="other">%d pages not yet saved</item>
+    </plurals>
+    <!-- Library screen: FAB label -->
+    <string name="library_new_scan">New Scan</string>
+    <!-- Library / Document screen -->
+    <string name="save_to_library">Save to Library</string>
+    <!-- Library screen: sort menu options -->
+    <string name="sort_newest_first">Newest first</string>
+    <string name="sort_oldest_first">Oldest first</string>
+    <string name="sort_name_az">Name A–Z</string>
+    <string name="sort_name_za">Name Z–A</string>
+    <string name="sort_most_pages">Most pages</string>
+    <!-- Onboarding screen: page titles -->
+    <string name="onboarding_scan_title">Scan any document</string>
+    <string name="onboarding_scan_body">Hold your phone over a document. FairScan automatically detects the edges and corrects perspective.</string>
+    <string name="onboarding_organize_title">Organize your library</string>
+    <string name="onboarding_organize_body">Save scans to your personal library. Rename, reorder, or merge pages at any time.</string>
+    <string name="onboarding_export_title">Export &amp; share</string>
+    <string name="onboarding_export_body">Export to PDF or JPEG and share directly — no account, no cloud, no tracking.</string>
+    <!-- Onboarding buttons -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <!-- Cloud backup screen -->
+    <string name="cloud_backup">Cloud &amp; Backup</string>
+    <string name="cloud_backup_description">Back up your library to any folder — Google Drive, OneDrive, Dropbox, or local storage</string>
+    <string name="cloud_backup_choose_folder">Choose backup folder</string>
+    <string name="cloud_backup_backup_now">Back up now</string>
+    <string name="cloud_backup_restore">Restore from backup</string>
+    <string name="cloud_backup_auto_backup">Enable automatic backup</string>
+    <string name="cloud_backup_last_backup">Last backup: %1$s</string>
+    <string name="cloud_backup_never">Never</string>
+    <!-- Settings screen: appearance section -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_accent_color">Accent color</string>
+    <!-- Document screen: undo/redo -->
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <!-- Document screen: update existing library document -->
+    <string name="update_library">Update</string>
     <!-- About screen -->
     <string name="version">Version</string>
     <!-- About screen -->

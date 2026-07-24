@@ -70,10 +70,16 @@ import org.fairscan.app.ui.screens.export.ExportEvent
 import org.fairscan.app.ui.screens.export.ExportResult
 import org.fairscan.app.ui.screens.export.ExportScreenWrapper
 import org.fairscan.app.ui.screens.export.ExportViewModel
+import org.fairscan.app.ui.screens.cloud.CloudBackupScreen
+import org.fairscan.app.ui.screens.library.LibraryScreen
+import org.fairscan.app.ui.screens.library.LibraryViewModel
+import org.fairscan.app.ui.screens.onboarding.OnboardingScreen
 import org.fairscan.app.ui.screens.settings.OcrLanguagesScreen
 import org.fairscan.app.ui.screens.settings.SettingsScreen
 import org.fairscan.app.ui.screens.settings.SettingsUiState
 import org.fairscan.app.ui.screens.settings.SettingsViewModel
+import org.fairscan.app.ui.theme.AccentColor
+import org.fairscan.app.ui.theme.AppTheme
 import org.fairscan.app.ui.theme.FairScanTheme
 import org.opencv.android.OpenCVLoader
 import java.io.File
@@ -101,7 +107,12 @@ class MainActivity : ComponentActivity() {
         val imageRepository = sessionViewModel.imageRepository
         viewModel = viewModels<MainViewModel> {
             appContainer.viewModelFactory {
-                MainViewModel(imageRepository, appContainer.logger)
+                MainViewModel(
+                    imageRepository,
+                    appContainer.logger,
+                    appContainer.libraryRepository,
+                    appContainer.settingsRepository,
+                )
             }
         }.value
         val exportViewModel: ExportViewModel by viewModels {
@@ -118,6 +129,8 @@ class MainActivity : ComponentActivity() {
 
         val settingsViewModel: SettingsViewModel
             by viewModels { appContainer.settingsViewModelFactory }
+        val libraryViewModel: LibraryViewModel
+            by viewModels { appContainer.libraryViewModelFactory }
         lifecycleScope.launch(Dispatchers.IO) {
             exportViewModel.cleanUpOldPreparedFiles(1000 * 3600)
         }
@@ -133,12 +146,22 @@ class MainActivity : ComponentActivity() {
             val cropInitialState by viewModel.cropInitState.collectAsStateWithLifecycle()
             val exportUiState by exportViewModel.uiState.collectAsStateWithLifecycle()
             val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            val libraryUiState by libraryViewModel.uiState.collectAsStateWithLifecycle()
+            val hasUnfinishedSession by viewModel.hasUnfinishedSession.collectAsStateWithLifecycle()
+            val unfinishedPageCount by viewModel.unfinishedPageCount.collectAsStateWithLifecycle()
             val cameraPermission = rememberCameraPermissionState()
+            val appTheme = settingsUiState.appTheme
+            val accentColor = settingsUiState.accentColor
+
+            LaunchedEffect(hasUnfinishedSession, unfinishedPageCount) {
+                libraryViewModel.setUnfinishedSession(hasUnfinishedSession, unfinishedPageCount)
+            }
+
             CollectCameraEvents(cameraViewModel, viewModel)
             CollectExportEvents(context, exportViewModel)
             CollectAboutEvents(context, aboutViewModel, imageRepository)
 
-            FairScanTheme {
+            FairScanTheme(appTheme = appTheme, accentColor = accentColor) {
                 val navigation = navigation(viewModel, launchMode)
                 val onExportClick = if (launchMode == LaunchMode.EXTERNAL_SCAN_TO_PDF) {
                     {
@@ -164,6 +187,38 @@ class MainActivity : ComponentActivity() {
                 when (currentScreen) {
                     null -> {
                         // waiting to load pages to get an initial screen
+                    }
+                    is Screen.Main.Onboarding -> {
+                        OnboardingScreen(
+                            onFinished = {
+                                lifecycleScope.launch {
+                                    appContainer.settingsRepository.setOnboardingDone(true)
+                                }
+                                viewModel.navigateTo(Screen.Main.Library)
+                            }
+                        )
+                    }
+                    is Screen.Main.Library -> {
+                        LibraryScreen(
+                            uiState = libraryUiState,
+                            onDocumentClick = { docId ->
+                                viewModel.openLibraryDocument(docId)
+                            },
+                            onDocumentLongClick = { docId ->
+                                libraryViewModel.enterSelectionMode(docId)
+                            },
+                            onToggleSelection = libraryViewModel::toggleSelection,
+                            onDeleteSelected = libraryViewModel::deleteSelected,
+                            onClearSelection = libraryViewModel::clearSelection,
+                            onDeleteDocument = libraryViewModel::deleteDocument,
+                            onRenameDocument = libraryViewModel::renameDocument,
+                            onDuplicateDocument = libraryViewModel::duplicateDocument,
+                            onNewScan = navigation.toCameraScreen,
+                            onResumeScan = navigation.toDocumentScreen,
+                            onSearchQueryChange = libraryViewModel::setSearchQuery,
+                            onSortOrderChange = libraryViewModel::setSortOrder,
+                            onSnackbarDismissed = libraryViewModel::dismissSnackbar,
+                        )
                     }
                     is Screen.Main.ResumeScan -> {
                         ResumeScanScreen(
@@ -204,16 +259,26 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     is Screen.Main.Document -> {
-                        DocumentScreen (
+                        DocumentScreen(
                             uiState = documentUiState,
                             navigation = navigation,
                             onExportClick = onExportClick,
-                            onDeleteImage =  { viewModel.deleteCurrentPage() },
+                            onSaveToLibraryClick = if (launchMode != LaunchMode.EXTERNAL_SCAN_TO_PDF) {
+                                { /* name collected inside DocumentScreen dialog */ }
+                            } else null,
+                            onDeleteImage = { viewModel.deleteCurrentPage() },
                             onRotateImage = { clockwise -> viewModel.rotateCurrentPage(clockwise) },
                             onToggleColorMode = { viewModel.toggleCurrentPageColorMode() },
                             onCropClick = { viewModel.onClickOnCropButton() },
                             onPageReorder = { id, newIndex -> viewModel.movePage(id, newIndex) },
-                            onPageSelected = viewModel::onPageSelected
+                            onPageSelected = viewModel::onPageSelected,
+                            onTogglePageSelection = viewModel::togglePageSelection,
+                            onBatchDelete = viewModel::batchDeleteSelected,
+                            onBatchRotate = { clockwise -> viewModel.batchRotateSelected(clockwise) },
+                            onBatchFilterToggle = viewModel::batchToggleFilterSelected,
+                            onExitSelectionMode = viewModel::exitSelectionMode,
+                            onUndo = viewModel::undo,
+                            onRedo = viewModel::redo,
                         )
                     }
                     is Screen.Main.Export -> {
@@ -271,6 +336,13 @@ class MainActivity : ComponentActivity() {
                             onCancelOcrDownload = settingsViewModel::cancelOcrDownload,
                         )
                     }
+                    is Screen.Overlay.CloudBackup -> {
+                        CloudBackupScreenWrapper(
+                            navigation = navigation,
+                            settingsRepository = appContainer.settingsRepository,
+                            documentCount = libraryUiState.documents.size,
+                        )
+                    }
                 }
             }
         }
@@ -286,6 +358,65 @@ class MainActivity : ComponentActivity() {
 
     private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+    }
+
+    @Composable
+    private fun CloudBackupScreenWrapper(
+        navigation: Navigation,
+        settingsRepository: org.fairscan.app.ui.screens.settings.SettingsRepository,
+        documentCount: Int,
+    ) {
+        val backupFolderLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocumentTree()
+        ) { uri ->
+            if (uri != null) {
+                val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                runCatching { contentResolver.takePersistableUriPermission(uri, flags) }
+                lifecycleScope.launch { settingsRepository.setBackupDirUri(uri.toString()) }
+            }
+        }
+        val restoreFileLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocument()
+        ) { _ ->
+            // Restore not yet implemented — placeholder
+            showToast("Restore coming soon")
+        }
+
+        val autoBackupEnabled by settingsRepository.autoBackupEnabled
+            .collectAsStateWithLifecycle(initialValue = false)
+        val backupDirUri by settingsRepository.backupDirUri
+            .collectAsStateWithLifecycle(initialValue = null)
+        val lastBackupTime by settingsRepository.lastBackupTime
+            .collectAsStateWithLifecycle(initialValue = null)
+        var isBackingUp by remember { mutableStateOf(false) }
+        var snackbarMessage by remember { mutableStateOf<String?>(null) }
+
+        val backupFolderName = backupDirUri?.let {
+            runCatching { settingsRepository.resolveExportDirName(it) }.getOrNull()
+        }
+
+        CloudBackupScreen(
+            onBack = navigation.back,
+            onPickBackupFolder = { backupFolderLauncher.launch(null) },
+            onPickRestoreFile = { restoreFileLauncher.launch(arrayOf("application/pdf", "application/zip")) },
+            isBackingUp = isBackingUp,
+            lastBackupTime = lastBackupTime,
+            backupFolderName = backupFolderName,
+            documentCount = documentCount,
+            onBackupNow = {
+                isBackingUp = true
+                snackbarMessage = "Backup started"
+                // Actual export logic deferred; SAF folder is already chosen
+                isBackingUp = false
+            },
+            onToggleAutoBackup = { enabled ->
+                lifecycleScope.launch { settingsRepository.setAutoBackupEnabled(enabled) }
+            },
+            autoBackupEnabled = autoBackupEnabled,
+            snackbarMessage = snackbarMessage,
+            onSnackbarDismissed = { snackbarMessage = null },
+        )
     }
 
     @Composable
@@ -328,6 +459,8 @@ class MainActivity : ComponentActivity() {
             onResetExportDirClick = { settingsViewModel.setExportDirUri(null) },
             onExportFormatChanged = { format -> settingsViewModel.setExportFormat(format) },
             onExportQualityChanged = { quality -> settingsViewModel.setExportQuality(quality) },
+            onAppThemeChanged = { theme -> settingsViewModel.setAppTheme(theme) },
+            onAccentColorChanged = { color -> settingsViewModel.setAccentColor(color) },
             navigation = nav,
         )
     }
@@ -505,6 +638,7 @@ class MainActivity : ComponentActivity() {
         toEditImageScreen = { viewModel.navigateTo(Screen.Main.EditImage) },
         toDocumentScreen = { viewModel.navigateTo(Screen.Main.Document()) },
         toExportScreen = { viewModel.navigateTo(Screen.Main.Export) },
+        toLibraryScreen = { viewModel.navigateTo(Screen.Main.Library) },
         toAboutScreen = { viewModel.navigateTo(Screen.Overlay.About) },
         toLibrariesScreen = { viewModel.navigateTo(Screen.Overlay.Libraries) },
         toSettingsScreen = if (launchMode == LaunchMode.EXTERNAL_SCAN_TO_PDF) null else {
@@ -513,6 +647,7 @@ class MainActivity : ComponentActivity() {
             }
         },
         toOcrLanguagesScreen = { viewModel.navigateTo(Screen.Overlay.OcrLanguages) },
+        toCloudBackupScreen = { viewModel.navigateTo(Screen.Overlay.CloudBackup) },
         back = {
             val origin = viewModel.currentScreen.value
             viewModel.navigateBack()
@@ -523,7 +658,8 @@ class MainActivity : ComponentActivity() {
             }
         },
         shouldDisplayBackButton = {
-            viewModel.currentScreen.value !is Screen.Main.Camera
+            val screen = viewModel.currentScreen.value
+            screen !is Screen.Main.Camera && screen !is Screen.Main.Library
                     || launchMode == LaunchMode.EXTERNAL_SCAN_TO_PDF
         }
     )

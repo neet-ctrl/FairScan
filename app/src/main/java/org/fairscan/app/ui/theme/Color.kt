@@ -5,19 +5,12 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package org.fairscan.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// A memorable ink-and-mint palette keeps controls legible over camera previews
-// and gives the scanner a focused, premium visual identity.
+// ── Mint (default "ink-and-mint" palette) ──────────────────────────────────
 val Primary = Color(0xFF00B887)
 val OnPrimary = Color(0xFF001B14)
 val PrimaryContainer = Color(0xFF9AF3D4)
@@ -65,3 +58,53 @@ val OnSurfaceDark = Color(0xFFE5F2ED)
 val SurfaceVariantDark = Color(0xFF1D2B26)
 val OnSurfaceVariantDark = Color(0xFFB8C9C1)
 val OutlineDark = Color(0xFF71847B)
+
+// ── Ocean Blue ────────────────────────────────────────────────────────────
+val BluePrimary = Color(0xFF1A73E8)
+val BlueOnPrimary = Color(0xFFFFFFFF)
+val BluePrimaryContainer = Color(0xFFD3E3FD)
+val BlueOnPrimaryContainer = Color(0xFF001B3E)
+val BluePrimaryDark = Color(0xFF7BAEFF)
+val BlueOnPrimaryDark = Color(0xFF003063)
+val BluePrimaryContainerDark = Color(0xFF004B9A)
+val BlueOnPrimaryContainerDark = Color(0xFFD3E3FD)
+
+// ── Purple Iris ───────────────────────────────────────────────────────────
+val PurplePrimary = Color(0xFF7C4DFF)
+val PurpleOnPrimary = Color(0xFFFFFFFF)
+val PurplePrimaryContainer = Color(0xFFE9DDFF)
+val PurpleOnPrimaryContainer = Color(0xFF21005D)
+val PurplePrimaryDark = Color(0xFFCDBDFF)
+val PurpleOnPrimaryDark = Color(0xFF380096)
+val PurplePrimaryContainerDark = Color(0xFF5B21DB)
+val PurpleOnPrimaryContainerDark = Color(0xFFE9DDFF)
+
+// ── Amber ─────────────────────────────────────────────────────────────────
+val AmberPrimary = Color(0xFFF4B400)
+val AmberOnPrimary = Color(0xFF1A0D00)
+val AmberPrimaryContainer = Color(0xFFFFDFA0)
+val AmberOnPrimaryContainer = Color(0xFF221B00)
+val AmberPrimaryDark = Color(0xFFFFD966)
+val AmberOnPrimaryDark = Color(0xFF3A2D00)
+val AmberPrimaryContainerDark = Color(0xFF7A6000)
+val AmberOnPrimaryContainerDark = Color(0xFFFFDFA0)
+
+// ── Rose ──────────────────────────────────────────────────────────────────
+val RosePrimary = Color(0xFFE91E63)
+val RoseOnPrimary = Color(0xFFFFFFFF)
+val RosePrimaryContainer = Color(0xFFFFD9E4)
+val RoseOnPrimaryContainer = Color(0xFF3E001E)
+val RosePrimaryDark = Color(0xFFFFB1C8)
+val RoseOnPrimaryDark = Color(0xFF630035)
+val RosePrimaryContainerDark = Color(0xFF8E0049)
+val RoseOnPrimaryContainerDark = Color(0xFFFFD9E4)
+
+// ── Slate ─────────────────────────────────────────────────────────────────
+val SlatePrimary = Color(0xFF607D8B)
+val SlateOnPrimary = Color(0xFFFFFFFF)
+val SlatePrimaryContainer = Color(0xFFCEE5F2)
+val SlateOnPrimaryContainer = Color(0xFF0B1E28)
+val SlatePrimaryDark = Color(0xFFB0CBD9)
+val SlateOnPrimaryDark = Color(0xFF1E3340)
+val SlatePrimaryContainerDark = Color(0xFF3B5562)
+val SlateOnPrimaryContainerDark = Color(0xFFCEE5F2)

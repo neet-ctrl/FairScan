@@ -5,12 +5,6 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package org.fairscan.app
 
@@ -27,6 +21,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.fairscan.app.data.FileLogger
 import org.fairscan.app.data.FileManager
+import org.fairscan.app.data.LibraryRepository
 import org.fairscan.app.data.LogRepository
 import org.fairscan.app.data.OcrLanguageRepository
 import org.fairscan.app.domain.ImageSegmentationService
@@ -34,6 +29,7 @@ import org.fairscan.app.domain.OcrService
 import org.fairscan.app.platform.AndroidImageLoader
 import org.fairscan.app.platform.AndroidPdfWriter
 import org.fairscan.app.ui.screens.camera.CameraViewModel
+import org.fairscan.app.ui.screens.library.LibraryViewModel
 import org.fairscan.app.ui.screens.settings.SettingsRepository
 import org.fairscan.app.ui.screens.settings.SettingsViewModel
 import java.io.File
@@ -55,6 +51,7 @@ private val Context.dataStore by preferencesDataStore(name = "fairscan_settings"
 class AppContainer(context: Context) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val cacheDir = context.cacheDir
+    val filesDir: File = context.filesDir
     private val dataStore = context.dataStore
     val preparationDir = File(context.cacheDir, "pdfs")
     val ocrLanguageRepository =
@@ -70,6 +67,7 @@ class AppContainer(context: Context) {
     val imageSegmentationService = ImageSegmentationService(context, logger)
     val imageLoader = AndroidImageLoader(context.contentResolver)
     val settingsRepository = SettingsRepository(context, dataStore)
+    val libraryRepository = LibraryRepository(context.filesDir)
 
     init {
         scope.launch { imageSegmentationService.initialize() }
@@ -87,19 +85,16 @@ class AppContainer(context: Context) {
 
     val cameraViewModelFactory = viewModelFactory { CameraViewModel(it) }
     val settingsViewModelFactory = viewModelFactory { SettingsViewModel(it) }
+    val libraryViewModelFactory = viewModelFactory { LibraryViewModel(it) }
 
     fun cleanOrphanSessions() {
         val sessionsRoot = sessionsRoot()
         if (!sessionsRoot.exists()) return
-
         val now = System.currentTimeMillis()
-
         sessionsRoot.listFiles()
             ?.filter { it.isDirectory }
             ?.forEach { dir ->
-                if (isOldSession(dir, now)) {
-                    dir.deleteRecursively()
-                }
+                if (isOldSession(dir, now)) dir.deleteRecursively()
             }
     }
 

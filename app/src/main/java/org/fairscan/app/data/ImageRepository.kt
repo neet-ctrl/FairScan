@@ -394,6 +394,36 @@ class ImageRepository(
         }
         return sourceFiles.maxByOrNull { it.lastModified() }
     }
+
+    /**
+     * Reloads the page list from disk. Call after external code has copied new files
+     * into the session directory (e.g., when opening a library document for editing).
+     */
+    suspend fun reload() = mutex.withLock {
+        synchronized(imageCache) { imageCache.clear() }
+        synchronized(thumbnailCache) { thumbnailCache.clear() }
+        pages = PageStore(loadPages())
+    }
+
+    /**
+     * Restores page order and manual rotations from an undo/redo snapshot.
+     * Pages not present in the snapshot are left unchanged in position.
+     */
+    suspend fun restoreFromSnapshot(snapshot: List<PageSnapshot>) = mutex.withLock {
+        // Reorder pages according to the snapshot order
+        val reordered = snapshot.mapNotNull { snap ->
+            pages.get(snap.pageId)?.copy(manualRotationDegrees = snap.manualRotationDegrees)
+        }.toMutableList()
+
+        // Append any pages not in the snapshot at the end (defensive)
+        val snapIds = snapshot.map { it.pageId }.toSet()
+        reordered += pages.pages().filter { it.id !in snapIds }
+
+        pages = PageStore(reordered)
+        saveMetadata()
+        synchronized(imageCache) { imageCache.clear() }
+        synchronized(thumbnailCache) { thumbnailCache.clear() }
+    }
 }
 
 fun Quad.toSerializable(): NormalizedQuad =

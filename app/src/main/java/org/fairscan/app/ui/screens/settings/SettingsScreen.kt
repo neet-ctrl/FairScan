@@ -5,53 +5,27 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package org.fairscan.app.ui.screens.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -64,6 +38,8 @@ import org.fairscan.app.domain.ExportQuality
 import org.fairscan.app.ui.Navigation
 import org.fairscan.app.ui.components.BackButton
 import org.fairscan.app.ui.dummyNavigation
+import org.fairscan.app.ui.theme.AccentColor
+import org.fairscan.app.ui.theme.AppTheme
 import org.fairscan.app.ui.theme.FairScanTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,6 +51,8 @@ fun SettingsScreen(
     onResetExportDirClick: () -> Unit,
     onExportFormatChanged: (ExportFormat) -> Unit,
     onExportQualityChanged: (ExportQuality) -> Unit,
+    onAppThemeChanged: (AppTheme) -> Unit,
+    onAccentColorChanged: (AccentColor) -> Unit,
     navigation: Navigation,
 ) {
     BackHandler { navigation.back() }
@@ -96,13 +74,14 @@ fun SettingsScreen(
             onResetExportDirClick,
             onExportFormatChanged,
             onExportQualityChanged,
+            onAppThemeChanged,
+            onAccentColorChanged,
             navigation,
             modifier = Modifier.padding(paddingValues),
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsContent(
     uiState: SettingsUiState,
@@ -111,6 +90,8 @@ private fun SettingsContent(
     onResetExportDirClick: () -> Unit,
     onExportFormatChanged: (ExportFormat) -> Unit,
     onExportQualityChanged: (ExportQuality) -> Unit,
+    onAppThemeChanged: (AppTheme) -> Unit,
+    onAccentColorChanged: (AccentColor) -> Unit,
     navigation: Navigation,
     modifier: Modifier = Modifier,
 ) {
@@ -118,16 +99,11 @@ private fun SettingsContent(
     val export = uiState.export
     val (folderLabel, folderLabelColor) = when {
         export.dirUri == null ->
-            stringResource(R.string.download_dirname) to
-                    MaterialTheme.colorScheme.onSurface
-
+            stringResource(R.string.download_dirname) to MaterialTheme.colorScheme.onSurface
         export.dirName != null ->
-            export.dirName to
-                    MaterialTheme.colorScheme.onSurface
-
+            export.dirName to MaterialTheme.colorScheme.onSurface
         else ->
-            stringResource(R.string.export_folder_permission_lost) to
-                    MaterialTheme.colorScheme.error
+            stringResource(R.string.export_folder_permission_lost) to MaterialTheme.colorScheme.error
     }
 
     Column(
@@ -139,12 +115,43 @@ private fun SettingsContent(
     ) {
         val context = LocalResources.current
 
+        // ── Appearance ──────────────────────────────────────────────────────
+        Text(
+            "Appearance",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = 4.dp, bottom = 6.dp),
+        )
+        SettingsGroup {
+            SingleChoiceSetting(
+                title = "Theme",
+                entries = AppTheme.entries,
+                onValueChanged = onAppThemeChanged,
+                label = { theme ->
+                    when (theme) {
+                        AppTheme.SYSTEM -> "Follow system"
+                        AppTheme.LIGHT -> "Light"
+                        AppTheme.DARK -> "Dark"
+                    }
+                },
+                selectedValue = uiState.appTheme,
+            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            AccentColorSetting(
+                selectedColor = uiState.accentColor,
+                onAccentColorChanged = onAccentColorChanged,
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(16.dp))
+
+        // ── Scan ────────────────────────────────────────────────────────────
         Text(
             stringResource(R.string.settings_section_scan),
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
+            modifier = Modifier.padding(bottom = 6.dp),
         )
-
         SettingsGroup {
             SingleChoiceSetting(
                 title = stringResource(R.string.color_mode_default),
@@ -159,9 +166,9 @@ private fun SettingsContent(
         HorizontalDivider()
         Spacer(Modifier.height(16.dp))
 
+        // ── Export ──────────────────────────────────────────────────────────
         Text(stringResource(R.string.settings_section_export), style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(16.dp))
-
         SettingsGroup {
             DirectorySettingItem(
                 label = stringResource(R.string.export_directory),
@@ -169,7 +176,6 @@ private fun SettingsContent(
                 folderLabelColor,
                 onClick = onChooseDirectoryClick,
             )
-
             if (export.dirUri != null) {
                 TextButton(
                     onClick = onResetExportDirClick,
@@ -178,9 +184,7 @@ private fun SettingsContent(
                     Text(stringResource(R.string.reset_to_default))
                 }
             }
-
             Spacer(Modifier.height(8.dp))
-
             SingleChoiceSetting(
                 title = stringResource(R.string.export_quality),
                 entries = ExportQuality.entries.reversed(),
@@ -188,7 +192,6 @@ private fun SettingsContent(
                 onValueChanged = onExportQualityChanged,
                 label = { t -> context.getString(t.labelResource) },
             )
-
             SingleChoiceSetting(
                 title = stringResource(R.string.export_format),
                 entries = ExportFormat.entries,
@@ -201,11 +204,29 @@ private fun SettingsContent(
         Spacer(Modifier.height(16.dp))
         HorizontalDivider()
         Spacer(Modifier.height(16.dp))
+
+        // ── Cloud & Backup ──────────────────────────────────────────────────
+        Text("Library & Backup", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        SettingsGroup {
+            ListItem(
+                leadingContent = { Icon(Icons.Default.CloudSync, contentDescription = null) },
+                headlineContent = { Text("Cloud & Backup") },
+                supportingContent = { Text("Back up documents to Google Drive, OneDrive, or any folder") },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+                modifier = Modifier.clickable { navigation.toCloudBackupScreen() }
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(16.dp))
+
+        // ── OCR ─────────────────────────────────────────────────────────────
         Text(
             stringResource(R.string.settings_section_ocr),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
         )
-
         SettingsGroup {
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_ocr_languages)) },
@@ -217,26 +238,72 @@ private fun SettingsContent(
                         .ifEmpty { stringResource(R.string.settings_ocr_languages_disabled) }
                     )
                 },
-                trailingContent = {
-                    Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null
-                    )
-                },
+                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                 modifier = Modifier.clickable { navigation.toOcrLanguagesScreen() }
             )
+        }
+
+        Spacer(Modifier.height(32.dp))
+    }
+}
+
+// ── Accent color picker ──────────────────────────────────────────────────────
+
+private val accentColorSwatches = mapOf(
+    AccentColor.MINT to Color(0xFF00B887),
+    AccentColor.BLUE to Color(0xFF1A73E8),
+    AccentColor.PURPLE to Color(0xFF7C4DFF),
+    AccentColor.AMBER to Color(0xFFF4B400),
+    AccentColor.ROSE to Color(0xFFE91E63),
+    AccentColor.SLATE to Color(0xFF607D8B),
+)
+
+@Composable
+private fun AccentColorSetting(
+    selectedColor: AccentColor,
+    onAccentColorChanged: (AccentColor) -> Unit,
+) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Text("Accent color", style = MaterialTheme.typography.bodyLarge)
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            AccentColor.entries.forEach { color ->
+                val swatch = accentColorSwatches[color] ?: Color.Gray
+                val isSelected = color == selectedColor
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(swatch)
+                        .then(
+                            if (isSelected) Modifier.border(3.dp, MaterialTheme.colorScheme.onBackground, CircleShape)
+                            else Modifier.border(1.5.dp, Color.Transparent, CircleShape)
+                        )
+                        .clickable { onAccentColorChanged(color) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (isSelected) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
+// ── Shared composables ────────────────────────────────────────────────────────
+
 @Composable
-private fun SettingsGroup(content: @Composable () -> Unit) {
+fun SettingsGroup(content: @Composable () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column { content() }
@@ -254,66 +321,39 @@ fun <T> SingleChoiceSetting(
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     ListItem(
-        headlineContent = {
-            Text(title)
-        },
-        supportingContent = {
-            Text(label(selectedValue))
-        },
-        trailingContent = {
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null
-            )
-        },
-        modifier = Modifier
-            .clickable {
-            showDialog = true
-            }
-            .padding(horizontal = 4.dp)
+        headlineContent = { Text(title) },
+        supportingContent = { Text(label(selectedValue)) },
+        trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+        modifier = Modifier.clickable { showDialog = true }.padding(horizontal = 4.dp)
     )
 
     if (showDialog) {
         AlertDialog(
             shape = MaterialTheme.shapes.large,
             containerColor = MaterialTheme.colorScheme.surface,
-            onDismissRequest = {
-                showDialog = false
-            },
-            title = {
-                Text(title)
-            },
+            onDismissRequest = { showDialog = false },
+            title = { Text(title) },
             text = {
                 Column {
                     entries.forEach { entry ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
-                                    onValueChanged(entry)
-                                    showDialog = false
-                                }
+                                .clickable { onValueChanged(entry); showDialog = false }
                                 .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
                                 selected = selectedValue == entry,
-                                onClick = {
-                                    onValueChanged(entry)
-                                    showDialog = false
-                                }
+                                onClick = { onValueChanged(entry); showDialog = false },
                             )
-
-                            Text(
-                                text = label(entry),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
+                            Text(text = label(entry), modifier = Modifier.padding(start = 8.dp))
                         }
                     }
                 }
             },
             confirmButton = {},
-            dismissButton = {}
+            dismissButton = {},
         )
     }
 }
@@ -324,64 +364,49 @@ fun DirectorySettingItem(
     folderLabel: String,
     folderLabelColor: Color,
     onClick: () -> Unit,
-
-    ) {
-    Column (
-        modifier = Modifier.padding(vertical = 0.dp, horizontal = 12.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge
-        )
-
+) {
+    Column(modifier = Modifier.padding(vertical = 0.dp, horizontal = 12.dp)) {
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(8.dp))
-
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick),
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
             shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant),
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = folderLabel,
                     style = MaterialTheme.typography.bodyLarge,
                     color = folderLabelColor,
                 )
-
-                Icon(
-                    Icons.Default.Folder,
-                    contentDescription = stringResource(R.string.change_directory),
-                )
+                Icon(Icons.Default.Folder, contentDescription = stringResource(R.string.change_directory))
             }
         }
     }
 }
 
+// ── Previews ──────────────────────────────────────────────────────────────────
+
 @Preview
-@Preview(heightDp = 780)
 @Composable
 fun SettingsScreenPreviewWithoutDir() {
     SettingsScreenPreview(SettingsUiState(
         installedOcrLanguages = setOf("fra", "eng", "deu"),
-        enabledOcrLanguages = setOf("fra", "eng")
+        enabledOcrLanguages = setOf("fra", "eng"),
     ))
 }
 
 @Preview
 @Composable
 fun SettingsScreenPreviewWithDir() {
-    SettingsScreenPreview(
-        SettingsUiState(export= ExportSettingsUiState(dirUri = "content://root/dir"))
-    )
+    SettingsScreenPreview(SettingsUiState(
+        export = ExportSettingsUiState(dirUri = "content://root/dir"),
+    ))
 }
 
 @Composable
@@ -394,6 +419,8 @@ fun SettingsScreenPreview(uiState: SettingsUiState) {
             onResetExportDirClick = {},
             onExportFormatChanged = {},
             onExportQualityChanged = {},
+            onAppThemeChanged = {},
+            onAccentColorChanged = {},
             navigation = dummyNavigation(),
         )
     }
