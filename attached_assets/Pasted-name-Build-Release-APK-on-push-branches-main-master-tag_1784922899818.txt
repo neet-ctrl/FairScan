@@ -1,0 +1,120 @@
+name: Build Release APK
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Signed Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Cache Gradle & Android
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Decode release keystore
+        run: base64 -d app/keystore/my-release-key.jks.base64 > app/keystore/my-release-key.jks
+
+      - name: Build signed release APK
+        id: build
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" ! -name "*-unsigned*" | head -n 1)
+          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$APK_PATH")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release APK as workflow artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-control-release-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Get APK info
+        id: apk-info
+        run: |
+          APK_SIZE=$(stat -c%s "${{ steps.apk.outputs.path }}")
+          echo "apk_size=$(echo "scale=2; $APK_SIZE / 1048576" | bc) MB" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          BRANCH="${{ github.ref_name }}"
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:7}"
+
+          BODY="## ACCU v$VERSION – Build ${{ github.run_number }}
+
+          **Date:** $(date +'%B %d, %Y')
+          **Branch:** $BRANCH
+          **Commit:** \`$SHORT_SHA\`
+
+          > Release build — signed, optimised for everyday use.
+
+          ### 📦 Package Details
+          | Field | Value |
+          |---|---|
+          | Version | $VERSION |
+          | Build # | ${{ github.run_number }} |
+          | Build type | Release (signed) |
+          | APK size | ${{ steps.apk-info.outputs.apk_size }} |
+          | Min Android | 8.0 (API 26) |
+          | Triggered by | ${{ github.actor }} |
+
+          ### ABI variants attached
+          Download the APK for your device architecture.
+
+          ### Installation
+          1. Download the APK for your device architecture
+          2. Enable *Install unknown apps* in your file manager settings
+          3. Install (upgrades existing release build in-place)"
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}-release
+          name: GitHub Control Release Build ${{ github.run_number }}
+          body: ${{ steps.release-notes.outputs.body }}
+          files: ${{ steps.apk.outputs.path }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

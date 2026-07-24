@@ -11,6 +11,13 @@ val abiCodes = mapOf(
     "armeabi-v7a" to -1,
     "x86_64" to -2,
 )
+val configuredAbis = providers.gradleProperty("releaseAbis")
+    .orNull
+    ?.split(",")
+    ?.map(String::trim)
+    ?.filter(String::isNotEmpty)
+    ?.ifEmpty { abiCodes.keys.toList() }
+    ?: abiCodes.keys.toList()
 
 android {
     namespace = "org.fairscan.app"
@@ -70,7 +77,7 @@ android {
             // Disable split ABIs when building appBundle: https://issuetracker.google.com/issues/402800800
             isEnable = !isBuildingBundle
             reset()
-            include(*abiCodes.keys.toTypedArray())
+            include(*configuredAbis.toTypedArray())
             isUniversalApk = false
         }
     }
