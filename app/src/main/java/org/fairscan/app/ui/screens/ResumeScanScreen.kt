@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -77,7 +79,7 @@ fun ResumeScanScreen(
     val resumeScanModifier = Modifier
         .fillMaxWidth()
         .clickable(onClick = onResumeScan)
-        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
         .padding(horizontal = 16.dp, vertical = 24.dp)
 
     Scaffold { innerPadding ->
@@ -85,6 +87,7 @@ fun ResumeScanScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(innerPadding)
             ) {
                 Column(
@@ -100,7 +103,7 @@ fun ResumeScanScreen(
                 NewScanArea(onStartNewScan, Modifier.weight(1f))
             }
         } else {
-            Row {
+            Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
                 Row(
                     modifier = resumeScanModifier.weight(1.8f),
                     verticalAlignment = Alignment.CenterVertically,
@@ -131,14 +134,20 @@ private fun FirstPageThumbnail(firstPageThumbnail: Bitmap?, modifier: Modifier) 
             modifier = modifier,
             contentAlignment = Alignment.Center,
         ) {
-            Image(
-                bitmap = bmp.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Fit,
-            )
+            Card(
+                shape = MaterialTheme.shapes.medium,
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Image(
+                    bitmap = bmp.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                    contentScale = ContentScale.Fit,
+                )
+            }
         }
     }
 }
@@ -161,6 +170,7 @@ private fun NewScanArea(onStartNewScan: () -> Unit, modifier: Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clickable(onClick = onStartNewScan)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

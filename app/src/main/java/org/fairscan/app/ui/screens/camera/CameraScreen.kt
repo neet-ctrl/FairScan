@@ -51,6 +51,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Highlight
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -392,6 +393,35 @@ private fun CameraPreviewBox(
             MessageBox(cameraUiState.liveAnalysisState.inferenceTime)
         }
         FocusOverlay(focusPoint)
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 14.dp),
+            shape = RoundedCornerShape(50),
+            color = Color.Black.copy(alpha = 0.48f),
+            tonalElevation = 0.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(7.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                )
+                Text(
+                    text = if (cameraUiState.pageCount == 0) {
+                        stringResource(R.string.app_name)
+                    } else {
+                        pageCountText(cameraUiState.pageCount)
+                    },
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
         CaptureButton(
             onClick = onCapture,
             modifier = Modifier
@@ -400,7 +430,13 @@ private fun CameraPreviewBox(
         )
         IconButton(
             onClick = onTorchSwitched,
-            modifier = Modifier.align(Alignment.BottomStart)
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 10.dp, start = 10.dp),
+            colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Black.copy(alpha = 0.42f),
+                contentColor = Color.White,
+            )
         ) {
             val torchEnabled = cameraUiState.isTorchEnabled
             Icon(
@@ -587,7 +623,9 @@ private fun Bar(
     onImportClicked: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -599,7 +637,7 @@ private fun Bar(
             ),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
-            Icon(Icons.Default.AddPhotoAlternate, contentDescription = null)
+            Icon(Icons.Default.PhotoLibrary, contentDescription = null)
             Spacer(Modifier.width(4.dp))
             Text(stringResource(R.string.import_photos),
                 maxLines = 1,
@@ -616,16 +654,27 @@ private fun Bar(
 
 @Composable
 private fun CameraPermissionRationale(onRequestCameraPermission: () -> Unit, modifier:Modifier) {
-    Box (modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(20.dp),
+        contentAlignment = Alignment.Center
+    ) {
         Card(
             modifier = Modifier
                 .align(Alignment.Center)
-                .fillMaxWidth()
-                .padding(12.dp)
+            .fillMaxWidth()
+            .padding(12.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = androidx.compose.material3.CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
         ) {
-            Column(Modifier.padding(16.dp)) {
+            Column(Modifier.padding(24.dp)) {
                 Text(
                     stringResource(R.string.camera_permission_rationale),
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(Modifier.height(8.dp))
                 Button(

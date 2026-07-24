@@ -63,6 +63,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -177,6 +178,9 @@ fun ExportScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.export_as, uiState.format)) },
                 navigationIcon = { BackButton(navigation.back) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
                 actions = {
                     AppOverflowMenu(navigation)
                 }
@@ -243,14 +247,14 @@ private fun PdfInfoCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 1.dp,
+        tonalElevation = 2.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             content()
         }
@@ -270,7 +274,7 @@ private fun PdfInfos(
         thumbnail?.let {
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                shape = RoundedCornerShape(6.dp),
+                shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .padding(4.dp)
                     .heightIn(max = THUMBNAIL_SIZE_DP.dp)
@@ -288,7 +292,12 @@ private fun PdfInfos(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             val pageCount = result?.pageCount ?: uiState.progress?.totalPages
-            pageCount?.let { count -> Text(text = pageCountText(count)) }
+            pageCount?.let { count ->
+                Text(
+                    text = pageCountText(count),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
 
             uiState.ocrActivation?.let { activated ->
                 Text(
@@ -361,6 +370,7 @@ private fun FilenameTextField(
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
+        shape = MaterialTheme.shapes.small,
         trailingIcon = {
             if (filename.isNotEmpty()) {
                 IconButton(onClick = {
@@ -427,14 +437,14 @@ private fun ActionSurface(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-        tonalElevation = 1.dp,
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             content()
         }
@@ -472,7 +482,12 @@ fun ExportButton(
         ),
         border = BorderStroke(1.dp, borderColor),
         enabled = enabled,
-        modifier = modifier
+        modifier = modifier,
+        shape = MaterialTheme.shapes.small,
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            horizontal = 14.dp,
+            vertical = 12.dp
+        )
     ) {
         Icon(icon, contentDescription = null)
         Spacer(Modifier.width(4.dp))

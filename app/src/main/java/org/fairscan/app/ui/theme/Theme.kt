@@ -16,9 +16,12 @@ package org.fairscan.app.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
@@ -72,6 +75,14 @@ private val LightColorScheme = lightColorScheme(
     outline = Outline
 )
 
+private val FairScanShapes = Shapes(
+    extraSmall = RoundedCornerShape(10.dp),
+    small = RoundedCornerShape(14.dp),
+    medium = RoundedCornerShape(20.dp),
+    large = RoundedCornerShape(28.dp),
+    extraLarge = RoundedCornerShape(36.dp),
+)
+
 @Composable
 fun FairScanTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -85,6 +96,7 @@ fun FairScanTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = FairScanShapes,
         content = content
     )
 }

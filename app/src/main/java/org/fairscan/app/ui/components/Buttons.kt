@@ -15,12 +15,14 @@
 package org.fairscan.app.ui.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,7 +46,22 @@ fun MainActionButton(
     iconDescription: String? = null,
     enabled: Boolean = true,
     ) {
-    Button(onClick = onClick, enabled = enabled, modifier = modifier) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            horizontal = 18.dp,
+            vertical = 12.dp
+        ),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    ) {
         icon?.let {
             Icon(icon, contentDescription = iconDescription)
         }
@@ -68,7 +85,7 @@ fun SecondaryActionButton(
             contentColor = MaterialTheme.colorScheme.primary,
             disabledContainerColor = if (isSystemInDarkTheme()) Color.DarkGray else Color.LightGray
         ),
-        modifier = modifier.size(40.dp),
+        modifier = modifier.size(48.dp),
         enabled = enabled
     ) {
         Icon(
@@ -81,7 +98,15 @@ fun SecondaryActionButton(
 
 @Composable
 fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    IconButton(onClick = onClick, modifier = modifier) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .size(48.dp),
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
+    ) {
         Icon(
             Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = stringResource(R.string.back),

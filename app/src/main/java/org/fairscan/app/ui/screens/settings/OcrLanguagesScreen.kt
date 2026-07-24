@@ -16,6 +16,7 @@ package org.fairscan.app.ui.screens.settings
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,9 +33,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,6 +86,9 @@ fun OcrLanguagesScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_ocr_languages)) },
                 navigationIcon = { BackButton(onBack) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
             )
         }
     ) { paddingValues ->
@@ -131,7 +137,9 @@ private fun OcrLanguagesContent(
     }
 
     LazyColumn(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         item {
             Text(
@@ -266,7 +274,17 @@ private fun LanguageItem(
                 }
             }
         },
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 3.dp)
+            .clip(MaterialTheme.shapes.small)
+            .background(
+                if (state == LanguageState.ACTIVE) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.52f)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                }
+            )
+            .clickable(onClick = onClick)
     )
 }
 
@@ -291,6 +309,8 @@ fun OcrDownloadDialog(
 ) {
     AlertDialog(
         onDismissRequest = {}, // tapping outside the dialog should not cancel
+        shape = MaterialTheme.shapes.large,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Text(
                 stringResource(R.string.settings_ocr_downloading),

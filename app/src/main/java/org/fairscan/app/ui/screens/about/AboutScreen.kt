@@ -17,6 +17,7 @@ package org.fairscan.app.ui.screens.about
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,8 +47,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -92,6 +95,9 @@ fun AboutScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.about)) },
                 navigationIcon = { BackButton(onBack) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
             )
         }
     ) { paddingValues ->
@@ -125,76 +131,97 @@ fun AboutContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.icon),
-            contentDescription = null,
-            modifier = Modifier
-                .size(96.dp)
-                .clip(RoundedCornerShape(20.dp))
-        )
-        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-        Text(
-            stringResource(R.string.app_tagline),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        HorizontalDivider()
-
-        Section(title = stringResource(R.string.version)) {
-            Text(BuildConfig.VERSION_NAME)
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(88.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    stringResource(R.string.app_tagline),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
 
-        Section(title = stringResource(R.string.developer)) {
-            Text("Pierre-Yves Nicolas")
+        InfoCard {
+            Section(title = stringResource(R.string.version)) { Text(BuildConfig.VERSION_NAME) }
+            Section(title = stringResource(R.string.developer)) { Text("Pierre-Yves Nicolas") }
         }
 
-        Section(title = stringResource(R.string.contact)) {
-            ContactLink(
-                icon = Icons.Default.Email,
-                text = EMAIL_ADDRESS,
-                onClick = { onStartActivity(createContactEmailIntent()) }
-            )
-            val websiteUrl = "https://fairscan.org"
-            ContactLink(
-                icon = Icons.Default.Language,
-                text = websiteUrl,
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, websiteUrl.toUri())
-                    onStartActivity(intent)
+        InfoCard {
+            Section(title = stringResource(R.string.contact)) {
+                ContactLink(Icons.Default.Email, EMAIL_ADDRESS) {
+                    onStartActivity(createContactEmailIntent())
                 }
-            )
+                val websiteUrl = "https://fairscan.org"
+                ContactLink(Icons.Default.Language, websiteUrl) {
+                    onStartActivity(Intent(Intent.ACTION_VIEW, websiteUrl.toUri()))
+                }
+            }
         }
 
-        Section(title = stringResource(R.string.support)) {
-            EmailImageButton(aboutUiState, onContactWithLastImageClicked)
-            CopyLogsButton (onClick = onCopyLogs)
+        InfoCard {
+            Section(title = stringResource(R.string.support)) {
+                EmailImageButton(aboutUiState, onContactWithLastImageClicked)
+                CopyLogsButton(onClick = onCopyLogs)
+            }
         }
 
-        Section(title = stringResource(R.string.license)) {
-            Text(
-                stringResource(R.string.licensed_under),
-            )
-            Text(
-                text = stringResource(R.string.view_the_full_license),
-                modifier = Modifier.clickable { showLicenseDialog.value = true },
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        Section(title = stringResource(R.string.libraries)) {
-            Text(
-                text = stringResource(R.string.view_full_list),
-                modifier = Modifier.clickable(onClick = onViewLibraries),
-                color = MaterialTheme.colorScheme.primary
-            )
+        InfoCard {
+            Section(title = stringResource(R.string.license)) {
+                Text(stringResource(R.string.licensed_under))
+                Text(
+                    text = stringResource(R.string.view_the_full_license),
+                    modifier = Modifier.clickable { showLicenseDialog.value = true },
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Section(title = stringResource(R.string.libraries)) {
+                Text(
+                    text = stringResource(R.string.view_full_list),
+                    modifier = Modifier.clickable(onClick = onViewLibraries),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
         Spacer(Modifier.height(32.dp))
+    }
+}
+
+@Composable
+private fun InfoCard(content: @Composable () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            content()
+        }
     }
 }
 

@@ -1,1 +1,2 @@
 - [Gradle signing paths](gradle-signing-paths.md) — signing files passed to an Android module resolve relative to that module.
+- [Android Compose review workflow](android-compose-review.md) — review-only UI changes through source inspection and diff checks, without Gradle.

@@ -111,7 +111,9 @@ fun CommonPageList(
         LazyRow (
             state = state.listState,
             contentPadding = PaddingValues(4.dp),
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainer),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             content = content,
@@ -155,8 +157,11 @@ private fun PageThumbnail(
         Card(
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             shape = RoundedCornerShape(6.dp),
-            border = BorderStroke(1.dp, borderColor),
-            modifier = Modifier.padding(4.dp).align(Alignment.Center)
+            border = BorderStroke(if (isSelected) 2.dp else 1.dp, borderColor),
+            modifier = Modifier.padding(4.dp).align(Alignment.Center),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Image(
                 bitmap = bitmap,
@@ -176,7 +181,7 @@ private fun BoxScope.PageNumberBadge(index: Int) {
         modifier = Modifier
             .padding(8.dp)
             .align(Alignment.BottomCenter)
-            .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.86f), shape = RoundedCornerShape(8.dp))
             .padding(vertical = 0.dp, horizontal = 8.dp)
     ) {
         Text(

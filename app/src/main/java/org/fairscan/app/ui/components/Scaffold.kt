@@ -16,6 +16,7 @@ package org.fairscan.app.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,7 @@ fun MyScaffold(
     Box {
         if (!isLandscape(LocalConfiguration.current)) {
             Scaffold(
+                containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
                     if (pageListState == null) {
                         bottomBar
@@ -72,7 +74,7 @@ fun MyScaffold(
                 content(Modifier.padding(innerPadding).fillMaxSize())
             }
         } else {
-            Scaffold { innerPadding ->
+            Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
                 Row(
                     modifier = Modifier.padding(innerPadding).fillMaxSize()
                 ) {
@@ -138,6 +140,7 @@ fun DocumentBar(
         } else {
             BottomAppBar(
                 containerColor = color,
+                tonalElevation = 0.dp,
             ) {
                 Row(
                     modifier = Modifier
@@ -166,7 +169,12 @@ fun AppOverflowMenu(
     Box(
         modifier
     ) {
-        IconButton(onClick = { expanded = true }) {
+        IconButton(
+            onClick = { expanded = true },
+            colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f)
+            )
+        ) {
             Icon(
                 Icons.Default.MoreVert,
                 contentDescription = stringResource(R.string.menu),
@@ -178,7 +186,10 @@ fun AppOverflowMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+                .background(
+                    MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(18.dp)
+                )
         ) {
 
             navigation.toSettingsScreen?.let { toSettings ->

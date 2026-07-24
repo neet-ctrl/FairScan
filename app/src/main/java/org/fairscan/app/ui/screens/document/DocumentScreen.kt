@@ -50,6 +50,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -159,7 +160,7 @@ private fun DocumentPreview(
     val document = uiState.document
     Column (
         modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box (
             modifier = Modifier.fillMaxSize()
@@ -174,17 +175,24 @@ private fun DocumentPreview(
                     )
                 }
 
-                Box(modifier = Modifier
-                    .fillMaxSize(0.92f)
-                    .align(Alignment.Center)) {
-                    Image(
-                        bitmap = imageBitmap,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .align(Alignment.Center)
-                            .zoomable(zoomState)
-                    )
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize(0.92f)
+                        .align(Alignment.Center),
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 4.dp,
+                    shadowElevation = 10.dp,
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Image(
+                            bitmap = imageBitmap,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .zoomable(zoomState)
+                        )
+                    }
                 }
             }
             if (uiState.currentPage?.isLoading ?: false) {
@@ -212,17 +220,20 @@ private fun DocumentPreview(
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
             )
-            Text("${currentPageIndex + 1} / ${document.pageCount()}",
-                color = MaterialTheme.colorScheme.inverseOnSurface,
+            Surface(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(all = 16.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-            )
+                    .padding(top = 16.dp),
+                shape = RoundedCornerShape(50),
+                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.84f),
+            ) {
+                Text(
+                    "${currentPageIndex + 1} / ${document.pageCount()}",
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                )
+            }
         }
     }
 }
@@ -234,7 +245,13 @@ fun RotationButtons(
 ) {
     // RotateLeft on the left, RotateRight on the right: for both LTR and RTL languages
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        Row(modifier = modifier.padding(8.dp)) {
+        Surface(
+            modifier = modifier.padding(8.dp),
+            shape = RoundedCornerShape(50),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+            tonalElevation = 4.dp,
+        ) {
+            Row(modifier = Modifier.padding(4.dp)) {
             // Using AutoMirrored icons would lead to an opposite rotation in RTL languages
             @Suppress("DEPRECATION")
             SecondaryActionButton(
@@ -242,13 +259,14 @@ fun RotationButtons(
                 contentDescription = stringResource(R.string.rotate_left),
                 onClick = { onRotateImage(false) }
             )
-            Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(8.dp))
             @Suppress("DEPRECATION")
             SecondaryActionButton(
                 icon = Icons.Default.RotateRight,
                 contentDescription = stringResource(R.string.rotate_right),
                 onClick = { onRotateImage(true) }
-            )
+                )
+            }
         }
     }
 }

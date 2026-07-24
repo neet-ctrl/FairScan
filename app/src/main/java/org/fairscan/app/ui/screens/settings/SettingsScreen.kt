@@ -16,6 +16,7 @@ package org.fairscan.app.ui.screens.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,6 +83,9 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = { BackButton(navigation.back) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
             )
         }
     ) { paddingValues ->
@@ -128,20 +133,27 @@ private fun SettingsContent(
     Column(
         modifier
             .fillMaxSize()
-            .padding(vertical = 8.dp, horizontal = 24.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(vertical = 12.dp, horizontal = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
         val context = LocalResources.current
 
-        Text(stringResource(R.string.settings_section_scan), style = MaterialTheme.typography.titleLarge)
-
-        SingleChoiceSetting(
-            title = stringResource(R.string.color_mode_default),
-            entries = DefaultColorMode.entries,
-            onValueChanged = onDefaultColorModeChanged,
-            label = { t -> context.getString(t.labelResource) },
-            selectedValue = uiState.defaultColorMode,
+        Text(
+            stringResource(R.string.settings_section_scan),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = 4.dp, bottom = 6.dp)
         )
+
+        SettingsGroup {
+            SingleChoiceSetting(
+                title = stringResource(R.string.color_mode_default),
+                entries = DefaultColorMode.entries,
+                onValueChanged = onDefaultColorModeChanged,
+                label = { t -> context.getString(t.labelResource) },
+                selectedValue = uiState.defaultColorMode,
+            )
+        }
 
         Spacer(Modifier.height(16.dp))
         HorizontalDivider()
@@ -150,39 +162,41 @@ private fun SettingsContent(
         Text(stringResource(R.string.settings_section_export), style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(16.dp))
 
-        DirectorySettingItem(
-            label = stringResource(R.string.export_directory),
-            folderLabel,
-            folderLabelColor,
-            onClick = onChooseDirectoryClick,
-        )
+        SettingsGroup {
+            DirectorySettingItem(
+                label = stringResource(R.string.export_directory),
+                folderLabel,
+                folderLabelColor,
+                onClick = onChooseDirectoryClick,
+            )
 
-        if (export.dirUri != null) {
-            TextButton(
-                onClick = onResetExportDirClick,
-                modifier = Modifier.padding(start = 4.dp),
-            ) {
-                Text(stringResource(R.string.reset_to_default))
+            if (export.dirUri != null) {
+                TextButton(
+                    onClick = onResetExportDirClick,
+                    modifier = Modifier.padding(start = 4.dp),
+                ) {
+                    Text(stringResource(R.string.reset_to_default))
+                }
             }
+
+            Spacer(Modifier.height(8.dp))
+
+            SingleChoiceSetting(
+                title = stringResource(R.string.export_quality),
+                entries = ExportQuality.entries.reversed(),
+                selectedValue = export.quality,
+                onValueChanged = onExportQualityChanged,
+                label = { t -> context.getString(t.labelResource) },
+            )
+
+            SingleChoiceSetting(
+                title = stringResource(R.string.export_format),
+                entries = ExportFormat.entries,
+                selectedValue = export.format,
+                onValueChanged = onExportFormatChanged,
+                label = { it.name },
+            )
         }
-
-        Spacer(Modifier.height(8.dp))
-
-        SingleChoiceSetting(
-            title = stringResource(R.string.export_quality),
-            entries = ExportQuality.entries.reversed(),
-            selectedValue = export.quality,
-            onValueChanged = onExportQualityChanged,
-            label = { t -> context.getString(t.labelResource) },
-        )
-
-        SingleChoiceSetting(
-            title = stringResource(R.string.export_format),
-            entries = ExportFormat.entries,
-            selectedValue = export.format,
-            onValueChanged = onExportFormatChanged,
-            label = { it.name },
-        )
 
         Spacer(Modifier.height(16.dp))
         HorizontalDivider()
@@ -192,24 +206,40 @@ private fun SettingsContent(
             style = MaterialTheme.typography.titleLarge
         )
 
-        ListItem(
-            headlineContent = { Text(stringResource(R.string.settings_ocr_languages)) },
-            supportingContent = {
-                Text(uiState.enabledOcrLanguages
-                    .map { OcrLanguage(it).displayName(displayLocale) }
-                    .sorted()
-                    .joinToString(" • ")
-                    .ifEmpty { stringResource(R.string.settings_ocr_languages_disabled) }
-                )
-            },
-            trailingContent = {
-                Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier.clickable { navigation.toOcrLanguagesScreen() }
-        )
+        SettingsGroup {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_ocr_languages)) },
+                supportingContent = {
+                    Text(uiState.enabledOcrLanguages
+                        .map { OcrLanguage(it).displayName(displayLocale) }
+                        .sorted()
+                        .joinToString(" • ")
+                        .ifEmpty { stringResource(R.string.settings_ocr_languages_disabled) }
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier.clickable { navigation.toOcrLanguagesScreen() }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsGroup(content: @Composable () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column { content() }
     }
 }
 
@@ -236,13 +266,17 @@ fun <T> SingleChoiceSetting(
                 contentDescription = null
             )
         },
-        modifier = Modifier.clickable {
+        modifier = Modifier
+            .clickable {
             showDialog = true
-        }
+            }
+            .padding(horizontal = 4.dp)
     )
 
     if (showDialog) {
         AlertDialog(
+            shape = MaterialTheme.shapes.large,
+            containerColor = MaterialTheme.colorScheme.surface,
             onDismissRequest = {
                 showDialog = false
             },

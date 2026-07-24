@@ -15,6 +15,8 @@
 package org.fairscan.app.ui.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +38,8 @@ fun ConfirmationDialog(
     onConfirm: () -> Unit,
 ) {
     AlertDialog(
+        shape = MaterialTheme.shapes.large,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = { Text(title) },
         text = { Text(message) },
         confirmButton = {
@@ -43,7 +47,11 @@ fun ConfirmationDialog(
                 showDialog.value = false
                 onConfirm()
             }) {
-                Text(stringResource(R.string.yes), fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.yes),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         },
         dismissButton = {
