@@ -3,7 +3,7 @@ name: Build Release APK
 on:
   push:
     branches: [main, master]
-    tags: ["v*"]
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -11,16 +11,14 @@ permissions:
 
 jobs:
   build:
-    name: Build Signed ARM64 Release APK
+    name: Build Signed Release APK
     runs-on: ubuntu-latest
 
     env:
-      # These values are intentionally embedded so this workflow needs no
-      # repository secrets. Keep the keystore file in this repository too.
-      ORG_GRADLE_PROJECT_RELEASE_STORE_FILE: attached_assets/my-release-key_1784922871544.jks
-      ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: "Sh@090609"
+      ORG_GRADLE_PROJECT_RELEASE_STORE_FILE: app/keystore/my-release-key.jks
+      ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: Sh@090609
       ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS: my-key
-      ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: "Sh@090609"
+      ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: Sh@090609
       ORG_GRADLE_PROJECT_releaseAbis: arm64-v8a
 
     steps:
@@ -31,10 +29,10 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
           cache: gradle
 
-      - name: Cache Gradle and Android build data
+      - name: Cache Gradle & Android
         uses: actions/cache@v4
         with:
           path: |
@@ -45,84 +43,83 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: Make Gradle executable
+      - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Confirm release keystore is present
-        run: test -f "$ORG_GRADLE_PROJECT_RELEASE_STORE_FILE"
+      - name: Decode release keystore
+        run: base64 -d app/keystore/my-release-key.jks.base64 > app/keystore/my-release-key.jks
 
-      - name: Build signed ARM64 release APK
-        run: >
-          ./gradlew :app:assembleRelease
-          --no-daemon
-          --no-build-cache
-          -x lint
-          -x lintVitalRelease
-          -x test
-          -x check
+      - name: Build signed release APK
+        id: build
+        run: ./gradlew assembleRelease --no-daemon -x lint -x lintVitalRelease -x test -x check
 
-      - name: Locate ARM64 APK
+      - name: Locate APK
         id: apk
-        shell: bash
         run: |
-          set -euo pipefail
-          APK_PATH="$(find app/build/outputs/apk/release -type f -name '*arm64-v8a.apk' ! -name '*-unsigned*' -print -quit)"
-          test -n "$APK_PATH"
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" ! -name "*-unsigned*" | head -n 1)
           echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
           echo "name=$(basename "$APK_PATH")" >> "$GITHUB_OUTPUT"
 
       - name: Upload release APK as workflow artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: fairscan-arm64-v8a-release-apk
+          name: github-control-release-apk
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
           retention-days: 90
 
       - name: Get APK info
         id: apk-info
-        shell: bash
         run: |
-          APK_SIZE="$(stat -c%s "${{ steps.apk.outputs.path }}")"
-          echo "apk_size=$(awk "BEGIN { printf \"%.2f MB\", $APK_SIZE / 1048576 }")" >> "$GITHUB_OUTPUT"
+          APK_SIZE=$(stat -c%s "${{ steps.apk.outputs.path }}")
+          echo "apk_size=$(echo "scale=2; $APK_SIZE / 1048576" | bc) MB" >> $GITHUB_OUTPUT
 
       - name: Generate release notes
         id: release-notes
-        shell: bash
         run: |
-          set -euo pipefail
-          VERSION="$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -n 1)"
-          SHORT_SHA="${GITHUB_SHA:0:7}"
-          BODY="## FairScan v$VERSION – Build $GITHUB_RUN_NUMBER
+          VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          BRANCH="${{ github.ref_name }}"
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:7}"
 
-          **Branch:** $GITHUB_REF_NAME
+          BODY="## ACCU v$VERSION – Build ${{ github.run_number }}
+
+          **Date:** $(date +'%B %d, %Y')
+          **Branch:** $BRANCH
           **Commit:** \`$SHORT_SHA\`
 
-          Signed release APK built only for the 64-bit ARM Android architecture.
+          > Release build — signed, optimised for everyday use.
 
-          ### Package details
+          ### 📦 Package Details
           | Field | Value |
           |---|---|
           | Version | $VERSION |
-          | Build | $GITHUB_RUN_NUMBER |
-          | ABI | arm64-v8a |
+          | Build # | ${{ github.run_number }} |
+          | Build type | Release (signed) |
           | APK size | ${{ steps.apk-info.outputs.apk_size }} |
-          | Minimum Android | 8.0 (API 26) |
+          | Min Android | 8.0 (API 26) |
+          | ABI | arm64-v8a |
+          | Triggered by | ${{ github.actor }} |
+
+          ### ABI variants attached
+          Download the APK for your device architecture.
 
           ### Installation
-          Download the APK below, enable installation from unknown sources if prompted, and install it on an arm64 Android device."
+          1. Download the APK for your device architecture
+          2. Enable *Install unknown apps* in your file manager settings
+          3. Install (upgrades existing release build in-place)"
 
-          {
-            echo "body<<EOF"
-            echo "$BODY"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release
+      - name: Create Release
+        if: success()
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}-release
-          name: FairScan Release Build ${{ github.run_number }}
+          name: GitHub Control Release Build ${{ github.run_number }}
           body: ${{ steps.release-notes.outputs.body }}
           files: ${{ steps.apk.outputs.path }}
           draft: false
