@@ -57,6 +57,7 @@ fun MyScaffold(
     navigation: Navigation,
     pageListState: CommonPageListState? = null,
     bottomBar: @Composable () -> Unit,
+    topStartContent: (@Composable () -> Unit)? = null,
     content: @Composable (Modifier) -> Unit,
 ) {
     Box {
@@ -87,13 +88,17 @@ fun MyScaffold(
                 }
             }
         }
-        if (navigation.shouldDisplayBackButton()) {
-            BackButton(
-                navigation.back,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
-            )
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (navigation.shouldDisplayBackButton()) {
+                BackButton(navigation.back)
+            }
+            topStartContent?.invoke()
         }
         AppOverflowMenu(
             navigation,

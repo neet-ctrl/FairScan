@@ -62,8 +62,10 @@ data class NavigationState private constructor(val stack: List<Screen>, val root
     }
 
     fun navigateBack(): NavigationState {
+        // Explicit screen cases must come BEFORE `root -> this` because navigateTo()
+        // sets `root` to the destination, so Camera/Document/etc. would otherwise
+        // match `root -> this` and silently do nothing.
         return when (current) {
-            root -> this // Back handled by system
             is Screen.Main.ResumeScan -> copy(stack = listOf(Screen.Main.Library))
             is Screen.Main.Onboarding -> this // Back handled by system
             is Screen.Main.Camera -> copy(stack = listOf(Screen.Main.Library))
@@ -71,6 +73,7 @@ data class NavigationState private constructor(val stack: List<Screen>, val root
             is Screen.Main.EditImage -> copy(stack = listOf(Screen.Main.Document()))
             is Screen.Main.Export -> copy(stack = listOf(Screen.Main.Library))
             is Screen.Overlay -> copy(stack = stack.dropLast(1))
+            root -> this // Library root: back handled by system (exits app)
             else -> this
         }
     }

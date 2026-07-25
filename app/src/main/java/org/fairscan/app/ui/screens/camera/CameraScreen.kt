@@ -306,7 +306,26 @@ private fun CameraScreenScaffold(
         MyScaffold(
             navigation = navigation,
             pageListState = pageListState,
-            bottomBar = { Bar(cameraUiState.pageCount, onFinalizePressed, onImportClicked) }
+            bottomBar = { Bar(cameraUiState.pageCount, onFinalizePressed, onImportClicked) },
+            topStartContent = {
+                IconButton(
+                    onClick = onTorchSwitched,
+                    colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                    )
+                ) {
+                    val torchEnabled = cameraUiState.isTorchEnabled
+                    Icon(
+                        imageVector = Icons.Default.Highlight,
+                        contentDescription = stringResource(
+                            if (torchEnabled) R.string.turn_off_torch else R.string.turn_on_torch
+                        ),
+                        tint = if (torchEnabled) androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+                               else androidx.compose.material3.MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+            }
         ) { modifier ->
             if (cameraUiState.importState is ImportState.Selecting) {
                 // display nothing: photo picker is active
@@ -320,7 +339,6 @@ private fun CameraScreenScaffold(
                     cameraUiState,
                     focusPoint,
                     onCapture,
-                    onTorchSwitched,
                     modifier.pointerInput(Unit) {
                         detectTapGestures { offset ->
                             focusPoint = offset
@@ -381,7 +399,6 @@ private fun CameraPreviewBox(
     cameraUiState: CameraUiState,
     focusPoint: Offset?,
     onCapture: () -> Unit,
-    onTorchSwitched: () -> Unit,
     modifier: Modifier,
 ) {
     Box(
@@ -431,25 +448,6 @@ private fun CameraPreviewBox(
                 .align(Alignment.BottomCenter)
                 .padding(16.dp)
         )
-        IconButton(
-            onClick = onTorchSwitched,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 10.dp, start = 10.dp),
-            colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
-                containerColor = Color.Black.copy(alpha = 0.42f),
-                contentColor = Color.White,
-            )
-        ) {
-            val torchEnabled = cameraUiState.isTorchEnabled
-            Icon(
-                imageVector = Icons.Default.Highlight,
-                contentDescription =
-                    stringResource(
-                        if (torchEnabled) R.string.turn_off_torch else R.string.turn_on_torch),
-                tint = if (torchEnabled) Color.White else Color.White.copy(alpha = 0.5f)
-            )
-        }
     }
 }
 
