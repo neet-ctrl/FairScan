@@ -77,6 +77,7 @@ fun DocumentScreen(
     onExitSelectionMode: () -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
+    onDuplicatePage: () -> Unit,
 ) {
     val showDeletePageDialog = rememberSaveable { mutableStateOf(false) }
     val showSaveDialog = rememberSaveable { mutableStateOf(false) }
@@ -156,6 +157,7 @@ fun DocumentScreen(
             onToggleColorMode,
             onCropClick,
             onTogglePageSelection,
+            onDuplicatePage,
             modifier,
         )
         if (showDeletePageDialog.value) {
@@ -213,6 +215,7 @@ private fun DocumentPreview(
     onToggleColorMode: () -> Unit,
     onCropClick: () -> Unit,
     onTogglePageSelection: (String) -> Unit,
+    onDuplicatePage: () -> Unit,
     modifier: Modifier,
 ) {
     val currentPageIndex = uiState.currentPageIndex
@@ -250,7 +253,7 @@ private fun DocumentPreview(
                     contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
             }
-            EditButtons(uiState, onToggleColorMode, onCropClick, modifier = Modifier.align(Alignment.BottomStart))
+            EditButtons(uiState, onToggleColorMode, onCropClick, onDuplicatePage, modifier = Modifier.align(Alignment.BottomStart))
             RotationButtons(onRotateImage, Modifier.align(Alignment.BottomCenter))
             SecondaryActionButton(
                 Icons.Outlined.Delete,
@@ -307,6 +310,7 @@ fun EditButtons(
     uiState: DocumentUiState,
     onToggleColorMode: () -> Unit,
     onCropClick: () -> Unit,
+    onDuplicatePage: () -> Unit,
     modifier: Modifier,
 ) {
     Row(modifier = modifier.padding(8.dp)) {
@@ -319,6 +323,14 @@ fun EditButtons(
                 icon = Icons.Default.Crop,
                 contentDescription = stringResource(R.string.crop),
                 onClick = onCropClick,
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        if (uiState.currentPage != null) {
+            SecondaryActionButton(
+                icon = Icons.Default.ContentCopy,
+                contentDescription = "Duplicate page",
+                onClick = onDuplicatePage,
             )
         }
     }
@@ -477,6 +489,7 @@ fun DocumentScreenPreview() {
             onExitSelectionMode = {},
             onUndo = {},
             onRedo = {},
+            onDuplicatePage = {},
         )
     }
 }

@@ -147,4 +147,38 @@ class LibraryViewModel(container: AppContainer) : ViewModel() {
     fun setUnfinishedSession(hasSession: Boolean, pageCount: Int) {
         _uiState.update { it.copy(hasUnfinishedSession = hasSession, unfinishedPageCount = pageCount) }
     }
+
+    // ── Undo-able single document delete ─────────────────────────────────────
+
+    private var pendingDeleteDoc: LibraryDocumentInfo? = null
+
+    fun deleteDocumentWithUndo(id: String) {
+        val doc = _uiState.value.documents.find { it.id == id } ?: return
+        pendingDeleteDoc = doc
+        _uiState.update { state ->
+            state.copy(
+                documents = state.documents.filter { it.id != id },
+                snackbarMessage = "Deleted \"${doc.name}\"",
+                hasPendingDelete = true,
+            )
+        }
+    }
+
+    fun undoDelete() {
+        val doc = pendingDeleteDoc ?: return
+        pendingDeleteDoc = null
+        _uiState.update { state ->
+            val restored = (state.documents + doc).sortedByDescending { it.modifiedAt }
+            state.copy(documents = restored, snackbarMessage = null, hasPendingDelete = false)
+        }
+    }
+
+    fun confirmPendingDelete() {
+        val doc = pendingDeleteDoc ?: return
+        pendingDeleteDoc = null
+        _uiState.update { it.copy(hasPendingDelete = false) }
+        viewModelScope.launch {
+            libraryRepository.deleteDocument(doc.id)
+        }
+    }
 }

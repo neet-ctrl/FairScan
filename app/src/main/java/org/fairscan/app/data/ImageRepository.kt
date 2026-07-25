@@ -328,6 +328,33 @@ class ImageRepository(
         return if (file.exists()) Jpeg(file.readBytes()) else null
     }
 
+    suspend fun duplicatePage(id: String): String? = mutex.withLock {
+        val page = pages.get(id) ?: return@withLock null
+        val newId = "${System.currentTimeMillis()}"
+
+        // Copy all processed image files for this id
+        processedDir.listFiles()?.filter { file ->
+            file.name.startsWith("$id.") || file.name.startsWith("$id-")
+        }?.forEach { file ->
+            val newName = file.name.replaceFirst(id, newId)
+            runCatching { file.copyTo(File(processedDir, newName), overwrite = false) }
+        }
+
+        // Copy source file
+        val src = sourceFile(id)
+        if (src.exists()) {
+            runCatching { src.copyTo(File(sourceDir, "$newId.jpg"), overwrite = false) }
+        }
+
+        // Insert the new page right after the original
+        val newPage = page.copy(id = newId)
+        val insertIndex = pages.pages().indexOfFirst { it.id == id } + 1
+        pages.addOrReplace(newPage)
+        pages.move(newId, insertIndex)
+        saveMetadata()
+        newId
+    }
+
     suspend fun movePage(id: String, newIndex: Int) = mutex.withLock {
         pages.move(id, newIndex)
         saveMetadata()

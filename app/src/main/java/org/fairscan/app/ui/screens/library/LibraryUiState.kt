@@ -23,6 +23,7 @@ data class LibraryUiState(
     val hasUnfinishedSession: Boolean = false,
     val unfinishedPageCount: Int = 0,
     val snackbarMessage: String? = null,
+    val hasPendingDelete: Boolean = false,
 ) {
     val filteredDocuments: List<LibraryDocumentInfo>
         get() {

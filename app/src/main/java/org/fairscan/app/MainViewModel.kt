@@ -496,6 +496,17 @@ class MainViewModel(
         }
     }
 
+    fun duplicateCurrentPage() {
+        val page = _pages.value.getOrNull(_currentPageIndex.value) ?: return
+        viewModelScope.launch {
+            val pages = withContext(Dispatchers.IO) {
+                imageRepository.duplicatePage(page.id)
+                imageRepository.pages()
+            }
+            _pages.value = pages
+        }
+    }
+
     /** Expose unfinished session state for library screen header. */
     val hasUnfinishedSession: StateFlow<Boolean> =
         _pages.map { it.isNotEmpty() }

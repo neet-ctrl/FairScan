@@ -227,7 +227,9 @@ class MainActivity : ComponentActivity() {
                             onSelectAll = libraryViewModel::selectAll,
                             onMergeSelected = libraryViewModel::mergeSelected,
                             onClearSelection = libraryViewModel::clearSelection,
-                            onDeleteDocument = libraryViewModel::deleteDocument,
+                            onDeleteDocument = libraryViewModel::deleteDocumentWithUndo,
+                            onUndoDelete = libraryViewModel::undoDelete,
+                            onConfirmPendingDelete = libraryViewModel::confirmPendingDelete,
                             onRenameDocument = libraryViewModel::renameDocument,
                             onDuplicateDocument = libraryViewModel::duplicateDocument,
                             onNewScan = navigation.toCameraScreen,
@@ -243,6 +245,7 @@ class MainActivity : ComponentActivity() {
                     is Screen.Main.ResumeScan -> {
                         ResumeScanScreen(
                             currentDocument = documentUiState,
+                            onBack = navigation.back,
                             onResumeScan = navigation.toCameraScreen,
                             onStartNewScan = {
                                 viewModel.startNewDocument()
@@ -299,6 +302,7 @@ class MainActivity : ComponentActivity() {
                             onExitSelectionMode = viewModel::exitSelectionMode,
                             onUndo = viewModel::undo,
                             onRedo = viewModel::redo,
+                            onDuplicatePage = viewModel::duplicateCurrentPage,
                         )
                     }
                     is Screen.Main.Export -> {
@@ -680,7 +684,7 @@ class MainActivity : ComponentActivity() {
         },
         shouldDisplayBackButton = {
             val screen = viewModel.currentScreen.value
-            screen !is Screen.Main.Camera && screen !is Screen.Main.Library
+            screen !is Screen.Main.Library
                     || launchMode == LaunchMode.EXTERNAL_SCAN_TO_PDF
         }
     )

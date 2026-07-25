@@ -15,6 +15,7 @@
 package org.fairscan.app.ui.screens
 
 import android.graphics.Bitmap
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,12 +31,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -70,9 +77,12 @@ import org.fairscan.imageprocessing.ColorMode
 @Composable
 fun ResumeScanScreen(
     currentDocument: DocumentUiState,
+    onBack: () -> Unit,
     onResumeScan: () -> Unit,
     onStartNewScan: () -> Unit,
 ) {
+    BackHandler { onBack() }
+
     val pageCount = currentDocument.document.pageCount()
     val firstPageThumbnail = currentDocument.currentPage?.bitmap
 
@@ -83,46 +93,66 @@ fun ResumeScanScreen(
         .padding(horizontal = 16.dp, vertical = 24.dp)
 
     Scaffold { innerPadding ->
-        if (!isLandscape(LocalConfiguration.current)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(innerPadding)
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (!isLandscape(LocalConfiguration.current)) {
                 Column(
-                    modifier = resumeScanModifier.weight(2f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    FirstPageThumbnail(firstPageThumbnail, Modifier.weight(1f))
-                    Spacer(modifier = Modifier.height(20.dp))
-                    ResumeScanActions(pageCount, onResumeScan)
-                }
-                HorizontalDivider()
-                NewScanArea(onStartNewScan, Modifier.weight(1f))
-            }
-        } else {
-            Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-                Row(
-                    modifier = resumeScanModifier.weight(1.8f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    FirstPageThumbnail(firstPageThumbnail, Modifier.weight(1f))
-                    Spacer(Modifier.width(8.dp))
                     Column(
+                        modifier = resumeScanModifier.weight(2f),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
                     ) {
+                        FirstPageThumbnail(firstPageThumbnail, Modifier.weight(1f))
+                        Spacer(modifier = Modifier.height(20.dp))
                         ResumeScanActions(pageCount, onResumeScan)
                     }
+                    HorizontalDivider()
+                    NewScanArea(onStartNewScan, Modifier.weight(1f))
                 }
-                VerticalDivider()
-                NewScanArea(onStartNewScan, Modifier.weight(1f))
+            } else {
+                Row(modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize()) {
+                    Row(
+                        modifier = resumeScanModifier.weight(1.8f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        FirstPageThumbnail(firstPageThumbnail, Modifier.weight(1f))
+                        Spacer(Modifier.width(8.dp))
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                        ) {
+                            ResumeScanActions(pageCount, onResumeScan)
+                        }
+                    }
+                    VerticalDivider()
+                    NewScanArea(onStartNewScan, Modifier.weight(1f))
+                }
+            }
+
+            // Back button overlaid in top-start
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .statusBarsPadding()
+                    .padding(4.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f),
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to Library")
             }
         }
     }
@@ -209,8 +239,10 @@ fun ResumeScanScreenPreview() {
     val key = PageViewKey("123", Rotation.R0, null, 0)
     FairScanTheme {
         ResumeScanScreen(
-            DocumentUiState(1, CurrentPageUiState(key,image, ColorMode.COLOR, true), document),
-             {}, {}
+            currentDocument = DocumentUiState(1, CurrentPageUiState(key, image, ColorMode.COLOR, true), document),
+            onBack = {},
+            onResumeScan = {},
+            onStartNewScan = {},
         )
     }
 }

@@ -57,6 +57,8 @@ fun LibraryScreen(
     onMergeSelected: (String) -> Unit,
     onClearSelection: () -> Unit,
     onDeleteDocument: (String) -> Unit,
+    onUndoDelete: () -> Unit,
+    onConfirmPendingDelete: () -> Unit,
     onRenameDocument: (String, String) -> Unit,
     onDuplicateDocument: (String) -> Unit,
     onNewScan: () -> Unit,
@@ -70,7 +72,6 @@ fun LibraryScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var renameDocumentId by rememberSaveable { mutableStateOf<String?>(null) }
-    var deleteDocumentId by rememberSaveable { mutableStateOf<String?>(null) }
     var showSortMenu by remember { mutableStateOf(false) }
     var previewDocumentId by rememberSaveable { mutableStateOf<String?>(null) }
     var showMergeDialog by rememberSaveable { mutableStateOf(false) }
@@ -83,7 +84,16 @@ fun LibraryScreen(
     LaunchedEffect(uiState.snackbarMessage) {
         val msg = uiState.snackbarMessage
         if (msg != null) {
-            snackbarHostState.showSnackbar(msg)
+            val result = snackbarHostState.showSnackbar(
+                message = msg,
+                actionLabel = if (uiState.hasPendingDelete) "Undo" else null,
+                duration = SnackbarDuration.Short,
+                withDismissAction = true,
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> onUndoDelete()
+                SnackbarResult.Dismissed -> if (uiState.hasPendingDelete) onConfirmPendingDelete()
+            }
             onSnackbarDismissed()
         }
     }
@@ -207,9 +217,9 @@ fun LibraryScreen(
                         val dismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { value ->
                                 if (value != SwipeToDismissBoxValue.Settled && !uiState.isSelectionMode) {
-                                    deleteDocumentId = doc.id
+                                    onDeleteDocument(doc.id)
                                 }
-                                false // we show dialog; don't auto-remove
+                                false // animate back; soft delete handles actual removal
                             }
                         )
 
@@ -247,7 +257,7 @@ fun LibraryScreen(
                                 onLongClick = { onDocumentLongClick(doc.id) },
                                 onRename = { renameDocumentId = doc.id },
                                 onDuplicate = { onDuplicateDocument(doc.id) },
-                                onDelete = { deleteDocumentId = doc.id },
+                                onDelete = { onDeleteDocument(doc.id) },
                             )
                         }
                     }
@@ -276,7 +286,7 @@ fun LibraryScreen(
                     onOpen = { previewDocumentId = null; onDocumentClick(id) },
                     onRename = { previewDocumentId = null; renameDocumentId = id },
                     onDuplicate = { previewDocumentId = null; onDuplicateDocument(id) },
-                    onDelete = { previewDocumentId = null; deleteDocumentId = id },
+                    onDelete = { previewDocumentId = null; onDeleteDocument(id) },
                 )
             }
         }
@@ -310,25 +320,6 @@ fun LibraryScreen(
                 },
             )
         }
-    }
-
-    // ── Delete confirmation ───────────────────────────────────────────────────
-    deleteDocumentId?.let { id ->
-        AlertDialog(
-            onDismissRequest = { deleteDocumentId = null },
-            shape = MaterialTheme.shapes.large,
-            title = { Text("Delete document") },
-            text = { Text("This document will be permanently deleted.") },
-            confirmButton = {
-                Button(
-                    onClick = { onDeleteDocument(id); deleteDocumentId = null },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                ) { Text("Delete") }
-            },
-            dismissButton = {
-                TextButton(onClick = { deleteDocumentId = null }) { Text("Cancel") }
-            },
-        )
     }
 
     // ── Merge dialog ──────────────────────────────────────────────────────────

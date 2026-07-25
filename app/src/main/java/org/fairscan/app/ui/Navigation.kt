@@ -64,7 +64,7 @@ data class NavigationState private constructor(val stack: List<Screen>, val root
     fun navigateBack(): NavigationState {
         return when (current) {
             root -> this // Back handled by system
-            is Screen.Main.ResumeScan -> this // Back handled by system
+            is Screen.Main.ResumeScan -> copy(stack = listOf(Screen.Main.Library))
             is Screen.Main.Onboarding -> this // Back handled by system
             is Screen.Main.Camera -> copy(stack = listOf(Screen.Main.Library))
             is Screen.Main.Document -> copy(stack = listOf(Screen.Main.Library))

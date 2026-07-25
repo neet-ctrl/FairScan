@@ -16,6 +16,7 @@ package org.fairscan.app.ui.screens.camera
 
 import android.content.res.Configuration
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.animateFloat
@@ -134,6 +135,8 @@ fun CameraScreen(
     cameraPermission: CameraPermissionState,
     onImportClicked: () -> Unit,
 ) {
+    BackHandler { navigation.back() }
+
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
     val document by viewModel.documentUiModel.collectAsStateWithLifecycle()
     val thumbnailCoords = remember { mutableStateOf(Offset.Zero) }
